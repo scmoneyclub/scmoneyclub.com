@@ -43,9 +43,11 @@ interface ChartDataPoint {
   close: number;
 }
 
-interface ETHPriceData {
+type Ticker = 'BTC' | 'ETH' | 'SOL';
+
+interface CryptoPriceData {
   RAW: {
-    ETH: {
+    [key: string]: {
       USD: {
         PRICE: number;
         CHANGEPCT24HOUR: number;
@@ -53,7 +55,7 @@ interface ETHPriceData {
     };
   };
   DISPLAY: {
-    ETH: {
+    [key: string]: {
       USD: {
         PRICE: string;
         CHANGEPCT24HOUR: string;
@@ -63,45 +65,46 @@ interface ETHPriceData {
 }
 
 export default function HomeFeaturedCrypto() {
-  const [data, setData] = useState<CryptoCompareData | null>(null);
+  const [selectedTicker, setSelectedTicker] = useState<Ticker>('BTC');
+  const [chartData, setChartData] = useState<CryptoCompareData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [ethData, setEthData] = useState<ETHPriceData | null>(null);
+  const [priceData, setPriceData] = useState<CryptoPriceData | null>(null);
 
-  const fetchBitcoinData = async () => {
+  const fetchChartData = async (ticker: Ticker) => {
     try {
       setLoading(true);
       const response = await axios.get<CryptoCompareData>(
-        'https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=30&aggregate=1'
+        `https://min-api.cryptocompare.com/data/histoday?fsym=${ticker}&tsym=USD&limit=30&aggregate=1`
       );
-      setData(response.data);
-      console.log('Bitcoin Chart Data:', JSON.stringify(response.data));
+      setChartData(response.data);
+      // console.log(`${ticker} Chart Data:`, JSON.stringify(response.data));
     } catch (error) {
-      console.error('Error fetching Bitcoin data:', error);
+      console.error(`Error fetching ${ticker} chart data:`, error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchETHData = async () => {
+  const fetchPriceData = async () => {
     try {
-      const response = await axios.get<ETHPriceData>(
-        'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=ETH&tsyms=USD'
+      const response = await axios.get<CryptoPriceData>(
+        'https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH,SOL&tsyms=USD'
       );
-      setEthData(response.data);
+      setPriceData(response.data);
     } catch (error) {
-      console.error('Error fetching ETH data:', error);
+      console.error('Error fetching price data:', error);
     }
   };
 
   useEffect(() => {
-    fetchBitcoinData();
-    fetchETHData();
-  }, []);
+    fetchChartData(selectedTicker);
+    fetchPriceData();
+  }, [selectedTicker]);
 
-  const chartData: ChartDataPoint[] = useMemo(() => {
-    if (!data?.Data) return [];
+  const processedChartData: ChartDataPoint[] = useMemo(() => {
+    if (!chartData?.Data) return [];
 
-    return data.Data.map((item) => {
+    return chartData.Data.map((item) => {
       const date = new Date(item.time * 1000);
       return {
         date: date.toLocaleDateString('en-US', {
@@ -116,12 +119,22 @@ export default function HomeFeaturedCrypto() {
         close: item.close,
       };
     });
-  }, [data]);
+  }, [chartData]);
 
-  const currentPrice = chartData.length > 0 ? chartData[chartData.length - 1].price : 0;
-  const previousPrice = chartData.length > 1 ? chartData[chartData.length - 2].price : currentPrice;
+  const currentPrice = processedChartData.length > 0 ? processedChartData[processedChartData.length - 1].price : 0;
+  const previousPrice = processedChartData.length > 1 ? processedChartData[processedChartData.length - 2].price : currentPrice;
   const priceChange = currentPrice - previousPrice;
   const priceChangePercent = previousPrice > 0 ? ((priceChange / previousPrice) * 100).toFixed(2) : '0.00';
+
+  const getTickerData = (ticker: Ticker) => {
+    if (!priceData) return null;
+    return {
+      price: priceData.RAW[ticker]?.USD?.PRICE || 0,
+      changePercent: priceData.RAW[ticker]?.USD?.CHANGEPCT24HOUR || 0,
+      displayPrice: priceData.DISPLAY[ticker]?.USD?.PRICE || '$0.00',
+      displayChangePercent: priceData.DISPLAY[ticker]?.USD?.CHANGEPCT24HOUR || '0.00',
+    };
+  };
 
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -155,15 +168,29 @@ export default function HomeFeaturedCrypto() {
     return null;
   };
 
-  if (loading) {
+  const tickerNames: Record<Ticker, string> = {
+    BTC: 'Bitcoin',
+    ETH: 'Ethereum',
+    SOL: 'Solana',
+  };
+
+  const tickerColors: Record<Ticker, string> = {
+    BTC: '#f7931a',
+    ETH: '#8c8c8c',
+    SOL: '#a72add',
+  };
+
+  const currentTickerColor = tickerColors[selectedTicker];
+
+  if (loading && !chartData) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center">
-        <div className="text-gray-500">Loading Bitcoin data...</div>
+        <div className="text-gray-500">Loading {tickerNames[selectedTicker]} data...</div>
       </div>
     );
   }
 
-  if (!data || chartData.length === 0) {
+  if (!chartData || processedChartData.length === 0) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center">
         <div className="text-gray-500">No data available</div>
@@ -172,37 +199,39 @@ export default function HomeFeaturedCrypto() {
   }
 
   return (
-    <section className="bg-black py-8">
+    <section className="bg-black py-8 lg:py-16">
       <div className="container mx-auto">
         <div className="w-full space-y-4">
           {/* Header with current price */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-white">Bitcoin (BTC)</h2>
+              <h2 className="text-2xl font-bold text-white">
+                {tickerNames[selectedTicker]} ({selectedTicker})
+              </h2>
               <p className="text-sm">30 Day Price History</p>
             </div>
             <div className="flex flex-col items-end">
-              <div className="text-3xl font-bold">
+              <div className="text-3xl font-bold text-white">
                 {formatPrice(currentPrice)}
               </div>
-              <div
+              {/* <div
                 className={`text-sm font-medium ${
                   priceChange >= 0 ? 'text-green-500' : 'text-red-500'
                 }`}
               >
                 {priceChange >= 0 ? '+' : ''}
                 {formatPrice(priceChange)} ({priceChangePercent}%)
-              </div>
+              </div> */}
             </div>
           </div>
           {/* Chart */}
           <div className="w-full h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+              <AreaChart data={processedChartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                 <defs>
-                  <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  <linearGradient id={`colorPrice-${selectedTicker}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={currentTickerColor} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={currentTickerColor} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" />
@@ -222,46 +251,65 @@ export default function HomeFeaturedCrypto() {
                 <Area
                   type="monotone"
                   dataKey="price"
-                  stroke="#3b82f6"
+                  stroke={currentTickerColor}
                   strokeWidth={2}
                   fillOpacity={1}
-                  fill="url(#colorPrice)"
+                  fill={`url(#colorPrice-${selectedTicker})`}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="flex flex-row gap-4">
-            <Button variant="outline">
-              <Image src="/crypto/eth.svg" alt="ETH" width={20} height={20} />
-              {ethData ? (
-                <div className="flex items-center gap-2">
-                  <span>ETH</span>
-                  <span>
-                    {ethData.DISPLAY.ETH.USD.PRICE}
-                  </span>
-                  <span
-                    className={`flex items-center gap-1 ${
-                      ethData.RAW.ETH.USD.CHANGEPCT24HOUR >= 0
-                        ? 'text-green-500'
-                        : 'text-red-500'
-                    }`}
-                  >
-                    {ethData.RAW.ETH.USD.CHANGEPCT24HOUR >= 0 ? (
-                      <TrendingUp className="w-4 h-4" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4" />
-                    )}
-                    <span>
-                      {ethData.RAW.ETH.USD.CHANGEPCT24HOUR >= 0 ? '+' : ''}
-                      {ethData.DISPLAY.ETH.USD.CHANGEPCT24HOUR}%
+        <div className="flex flex-row justify-center items-center gap-4 mt-4">
+          {(['BTC', 'ETH', 'SOL'] as Ticker[]).map((ticker) => {
+            const tickerData = getTickerData(ticker);
+            const isSelected = selectedTicker === ticker;
+          
+            return (
+              <Button
+                key={ticker}
+                // variant={isSelected ? 'default' : 'outline'}
+                onClick={() => setSelectedTicker(ticker)}
+                className={`flex items-center bg-black-50 hover:bg-gray-800 text-white border p-8 gap-2 h-12 ${isSelected ? 'border-green-500' : 'border-gray-900'}`}
+                size="lg"
+              >
+                <Image 
+                  src={`/crypto/${ticker.toLowerCase()}.svg`} 
+                  alt={ticker} 
+                  width={24} 
+                  height={24}
+                  className="w-10 h-10"
+                />
+                {tickerData ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-start">
+                      <span>{ticker}</span>
+                      <span>{tickerData.displayPrice}</span>
+                    </div>
+                    <span
+                      className={`flex items-center gap-1 ${
+                        tickerData.changePercent >= 0
+                          ? 'text-green-500'
+                          : 'text-red-500'
+                      }`}
+                    >
+                      {tickerData.changePercent >= 0 ? (
+                        <TrendingUp className="w-4 h-4" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4" />
+                      )}
+                      <span>
+                        {tickerData.changePercent >= 0 ? '+' : ''}
+                        {tickerData.displayChangePercent}%
+                      </span>
                     </span>
-                  </span>
-                </div>
-              ) : (
-                <span className="text-white">Loading ETH...</span>
-              )}
-            </Button>
+                  </div>
+                ) : (
+                  <span>Loading {ticker}...</span>
+                )}
+              </Button>
+            );
+          })}
         </div>
       </div>
     </section>
