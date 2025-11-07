@@ -3,7 +3,7 @@ import Header from "@/components/layout/Header";
 import LoginForm from "@/components/form/Login";
 import Footer from "@/components/layout/Footer";
 
-export default function LoginPage() {
+export default function AccountPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black text-gray-300">
       <Header />
@@ -14,4 +14,3 @@ export default function LoginPage() {
     </div>
   );
 }
-  

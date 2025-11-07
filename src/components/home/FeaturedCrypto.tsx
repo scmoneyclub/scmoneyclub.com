@@ -270,7 +270,7 @@ export default function HomeFeaturedCrypto() {
                 key={ticker}
                 // variant={isSelected ? 'default' : 'outline'}
                 onClick={() => setSelectedTicker(ticker)}
-                className={`flex items-center bg-black-50 hover:bg-gray-800 text-white border p-8 gap-2 h-12 ${isSelected ? 'border-green-500' : 'border-gray-900'}`}
+                className={`flex items-center bg-black-50 hover:bg-gray-800 text-white border p-8 gap-2 h-12 ${isSelected ? 'border-white' : 'border-gray-900'}`}
                 size="lg"
               >
                 <Image 

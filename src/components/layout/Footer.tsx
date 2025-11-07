@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Bot, Coins, Gem, Twitter, Linkedin, Github } from 'lucide-react';
+import { Bot, Coins, Twitter, Instagram, Github } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Footer() {
@@ -8,7 +8,7 @@ export default function Footer() {
   const investmentLinks = [
     { name: 'Artificial Intelligence', href: '/investments/artificial-intelligence', icon: Bot },
     { name: 'Cryptocurrency', href: '/investments/crypto', icon: Coins },
-    { name: 'Gold', href: '/investments/gold', icon: Gem },
+    // { name: 'Gold', href: '/investments/gold', icon: Gem },
   ];
 
   const companyLinks = [
@@ -24,9 +24,9 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { name: 'Twitter', href: '#', icon: Twitter },
-    { name: 'LinkedIn', href: '#', icon: Linkedin },
-    { name: 'GitHub', href: '#', icon: Github },
+    { name: 'Twitter', href: 'https://x.com/scmoneyclub', icon: Twitter },
+    { name: 'Instagram', href: 'http://instagram.com/scmoneyclub', icon: Instagram },
+    { name: 'GitHub', href: 'https://github.com/scmoneyclub', icon: Github },
   ];
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Bot, Coins, Gem } from "lucide-react";
+import { Bot, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Hero() {
@@ -12,6 +12,12 @@ export default function Hero() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
       className="relative min-h-[500px] lg:min-h-screen flex items-center justify-center text-center overflow-hidden"
+      style={{
+        backgroundImage: `url('/scms-circuit-board.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
     >
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
@@ -53,7 +59,7 @@ export default function Hero() {
               <span>Cryptocurrency</span>
             </Link>
           </Button>
-          <Button variant="outline" className="bg-black border-gray-600 hover:bg-yellow-500 hover:border-yellow-500 hover:text-white transition-colors flex items-center gap-2"
+          {/* <Button variant="outline" className="bg-black border-gray-600 hover:bg-yellow-500 hover:border-yellow-500 hover:text-white transition-colors flex items-center gap-2"
             size="lg"
             asChild
           >
@@ -61,7 +67,7 @@ export default function Hero() {
               <Gem size={18} />
               <span>Gold</span>
             </Link>
-          </Button>
+          </Button> */}
         </div>
       </div>
       {/* Optional dark overlay */}
