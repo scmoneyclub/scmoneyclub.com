@@ -1,7 +1,6 @@
 import Header from "@/components/layout/Header";
 import HeroVideo from "@/components/home/HeroVideo";
 import ArtificialIntelligence from "@/components/investments/ArtificialIntelligence";
-import FeaturedCrypto from "@/components/home/FeaturedCrypto";
 import CryptocurrencyInvestments from "@/components/investments/Cryptocurrency";
 import Footer from "@/components/layout/Footer";
 
@@ -12,8 +11,7 @@ export default function HomePage() {
       <main className="w-full">
         <HeroVideo />
         <ArtificialIntelligence />
-        <FeaturedCrypto />
-        <CryptocurrencyInvestments />
+        <CryptocurrencyInvestments showFeatures={false}/>
       </main>
       <Footer />
     </div>

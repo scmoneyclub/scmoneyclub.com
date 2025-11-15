@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, KeyRound } from "lucide-react";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,12 +19,11 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input id="email" type="email" required placeholder="you@example.com" />
       </div>
-
       <div className="space-y-2 relative">
         <Label htmlFor="password">Password</Label>
         <Input
@@ -44,8 +43,8 @@ export default function LoginForm() {
         </button>
       </div>
       {error && <p className="text-sm text-red-500">{error}</p>}
-      <Button type="submit" className="w-full">
-        Login
+      <Button type="submit" className="w-full bg-white text-black hover:bg-green-500 hover:text-white cursor-pointer">
+        <KeyRound className="w-4 h-4" />Login
       </Button>
     </form>
   );

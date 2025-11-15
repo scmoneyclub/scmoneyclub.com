@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Menu, X, Lock, Bot, Coins } from "lucide-react";
 import LoginForm from "@/components/form/Login";
+import PhantomConnect from "@/components/phantom/Connect";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -138,6 +139,10 @@ export default function Header() {
             <DialogDescription>Enter your credentials to access your account.</DialogDescription>
           </DialogHeader>
           <LoginForm />
+          <PhantomConnect />
+          <div className="text-center">
+            <p className="text-sm text-gray-300 m-0">Don't have an account? <Link href="/join" className="text-white underline">Create Account</Link></p>
+          </div>
         </DialogContent>
       </Dialog>
     </header>
