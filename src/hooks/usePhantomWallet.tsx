@@ -33,7 +33,14 @@ interface UsePhantomWalletReturn {
 }
 
 // Default Solana RPC endpoint (can be customized)
-const DEFAULT_RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
+// Using Ankr's public RPC which has better rate limits than the official endpoint
+// For mainnet, use: "https://rpc.ankr.com/solana"
+// For devnet, use: "https://rpc.ankr.com/solana_devnet"
+// If you have an Ankr API key, you can use: `https://rpc.ankr.com/solana/${process.env.NEXT_PUBLIC_ANKR_API_KEY}`
+const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_ANKR_SOLANA_RPC || 
+  (process.env.NEXT_PUBLIC_ANKR_API_KEY 
+    ? `https://rpc.ankr.com/solana/${process.env.NEXT_PUBLIC_ANKR_API_KEY}`
+    : "https://rpc.ankr.com/solana");
 
 export function usePhantomWallet(
   rpcEndpoint: string = DEFAULT_RPC_ENDPOINT
@@ -60,12 +67,9 @@ export function usePhantomWallet(
         setIsPhantomInstalled(false);
       }
     };
-
     checkPhantom();
-
     // Check again after a short delay in case Phantom loads asynchronously
     const timeout = setTimeout(checkPhantom, 100);
-
     return () => clearTimeout(timeout);
   }, []);
 
@@ -73,7 +77,6 @@ export function usePhantomWallet(
   useEffect(() => {
     const provider = window.solana;
     if (!provider || !provider.isPhantom) return;
-
     const handleAccountChange = (newPublicKey: PublicKey | null) => {
       if (newPublicKey) {
         setPublicKey(newPublicKey);
@@ -83,16 +86,13 @@ export function usePhantomWallet(
         setConnected(false);
       }
     };
-
     const handleDisconnect = () => {
       setPublicKey(null);
       setConnected(false);
     };
-
     // Listen for account changes
     provider.on("accountChanged", handleAccountChange);
     provider.on("disconnect", handleDisconnect);
-
     return () => {
       provider.removeListener("accountChanged", handleAccountChange);
       provider.removeListener("disconnect", handleDisconnect);
@@ -102,16 +102,13 @@ export function usePhantomWallet(
   // Connect to Phantom wallet
   const connect = useCallback(async () => {
     const provider = window.solana;
-    
     if (!provider || !provider.isPhantom) {
       const error = new Error("Phantom wallet is not installed. Please install it from https://phantom.app");
       setError(error);
       throw error;
     }
-
     setConnecting(true);
     setError(null);
-
     try {
       const response = await provider.connect({ onlyIfTrusted: false });
       setPublicKey(response.publicKey);
@@ -130,15 +127,12 @@ export function usePhantomWallet(
   // Disconnect from Phantom wallet
   const disconnect = useCallback(async () => {
     const provider = window.solana;
-    
     if (!provider || !provider.isPhantom) {
       setError(new Error("Phantom wallet is not installed"));
       return;
     }
-
     setDisconnecting(true);
     setError(null);
-
     try {
       await provider.disconnect();
       setPublicKey(null);

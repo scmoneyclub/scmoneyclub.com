@@ -240,7 +240,8 @@ export default function PhantomConnect({
               <Button
                 onClick={handleConnect}
                 disabled={connecting}
-                className="bg-gradient-to-r bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30"
+                // className="bg-gradient-to-r bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30"
+                className="bg-purple-600 hover:bg-purple-700"
               >
                 Try Again
               </Button>

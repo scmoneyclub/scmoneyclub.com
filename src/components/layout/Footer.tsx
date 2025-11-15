@@ -33,7 +33,14 @@ export default function Footer() {
     <footer className="bg-black border-t border-gray-900">
       <div className="container mx-auto px-6 py-12 lg:py-16">
         <Link href="/">
-          <Image src="/scmc-logo.svg" alt="SC Money Club" width={64} height={64} className="mx-auto"/>
+          <Image 
+            src="/scmc-logo.svg" 
+            alt="SC Money Club" 
+            width={64} 
+            height={64} 
+            className="mx-auto"
+            style={{ height: "auto" }}
+          />
         </Link>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Section */}

@@ -76,7 +76,14 @@ export default function Header() {
       <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-0">
         {/* Logo */}
         <Link href="/#hero" scroll={true} className="flex items-center space-x-2">
-          <Image src={'/scmc-logo.svg'} alt="SC Money Club" width={48} height={48} priority />
+          <Image 
+            src={'/scmc-logo.svg'} 
+            alt="SC Money Club" 
+            width={48} 
+            height={48} 
+            priority 
+            style={{ height: "auto" }}
+          />
           <span className="text-2xl font-bold">SCMC</span>
         </Link>
         {/* Desktop Nav */}
