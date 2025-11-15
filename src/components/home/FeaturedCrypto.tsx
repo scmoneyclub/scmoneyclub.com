@@ -122,9 +122,9 @@ export default function HomeFeaturedCrypto() {
   }, [chartData]);
 
   const currentPrice = processedChartData.length > 0 ? processedChartData[processedChartData.length - 1].price : 0;
-  const previousPrice = processedChartData.length > 1 ? processedChartData[processedChartData.length - 2].price : currentPrice;
-  const priceChange = currentPrice - previousPrice;
-  const priceChangePercent = previousPrice > 0 ? ((priceChange / previousPrice) * 100).toFixed(2) : '0.00';
+  // const previousPrice = processedChartData.length > 1 ? processedChartData[processedChartData.length - 2].price : currentPrice;
+  // const priceChange = currentPrice - previousPrice;
+  // const priceChangePercent = previousPrice > 0 ? ((priceChange / previousPrice) * 100).toFixed(2) : '0.00';
 
   const getTickerData = (ticker: Ticker) => {
     if (!priceData) return null;
@@ -234,7 +234,7 @@ export default function HomeFeaturedCrypto() {
                     <stop offset="95%" stopColor={currentTickerColor} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" />
+                {/* <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" /> */}
                 <XAxis
                   dataKey="dateShort"
                   tick={{ fill: '#6b7280', fontSize: 12 }}

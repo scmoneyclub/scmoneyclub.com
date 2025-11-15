@@ -65,7 +65,6 @@ export default function CryptoBitcoinChart() {
 
   const chartData: ChartDataPoint[] = useMemo(() => {
     if (!data?.Data) return [];
-
     return data.Data.map((item) => {
       const date = new Date(item.time * 1000);
       return {

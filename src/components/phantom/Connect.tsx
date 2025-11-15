@@ -187,10 +187,10 @@ export default function PhantomConnect({
                 Close
               </Button>
               <Button
-                variant="destructive"
+                variant="outline"
                 onClick={handleDisconnect}
                 disabled={disconnecting}
-                className="bg-red-600 hover:bg-red-700"
+                className="text-destructive"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 {disconnecting ? "Disconnecting..." : "Disconnect"}
@@ -240,7 +240,7 @@ export default function PhantomConnect({
               <Button
                 onClick={handleConnect}
                 disabled={connecting}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-gradient-to-r bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30"
               >
                 Try Again
               </Button>

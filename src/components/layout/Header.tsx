@@ -7,11 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Menu, X, Lock, Bot, Coins } from "lucide-react";
 import LoginForm from "@/components/form/Login";
 import PhantomConnect from "@/components/phantom/Connect";
+import { usePhantomWallet } from "@/hooks/usePhantomWallet";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const { wallet } = usePhantomWallet();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,16 +93,27 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-        {/* Secure Login (Desktop) */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="bg-black ml-4 hidden lg:inline-flex flex-row items-center justify-between"
-          onClick={() => setLoginDialogOpen(true)}
-        >
-          <Lock size={18} className="mr-1" />
-          <span>Secure Login</span>
-        </Button>
+        {/* Secure Login or Wallet (Desktop) */}
+        {wallet.connected && wallet.publicKey ? (
+          <div className="hidden lg:inline-flex ml-4">
+            <PhantomConnect
+              variant="outline"
+              size="sm"
+              className="bg-black"
+              showAddress={true}
+            />
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-black ml-4 hidden lg:inline-flex flex-row items-center justify-between"
+            onClick={() => setLoginDialogOpen(true)}
+          >
+            <Lock size={18} className="mr-1" />
+            <span>Secure Login</span>
+          </Button>
+        )}
         {/* Mobile Menu Toggle */}
         <button className="lg:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -121,15 +134,26 @@ export default function Header() {
               {label}
             </Link>
           ))}
-          <Button
-            variant="outline"
-            size="lg"
-            className="bg-black w-full justify-center"
-            onClick={() => setLoginDialogOpen(true)}
-          >
-            <Lock size={18} className="mr-1" />
-            <span className="text-center">Secure Login</span>
-          </Button>
+          {wallet.connected && wallet.publicKey ? (
+            <div className="w-full">
+              <PhantomConnect
+                variant="outline"
+                size="lg"
+                className="bg-black w-full justify-center"
+                showAddress={true}
+              />
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="lg"
+              className="bg-black w-full justify-center"
+              onClick={() => setLoginDialogOpen(true)}
+            >
+              <Lock size={18} className="mr-1" />
+              <span className="text-center">Secure Login</span>
+            </Button>
+          )}
         </div>
       )}
       <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
