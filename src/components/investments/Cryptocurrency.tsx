@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Bitcoin, Wallet, Lock, TrendingUp, Shield, Network } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import FeaturedCrypto from "@/components/home/FeaturedCrypto";
@@ -81,12 +81,6 @@ interface CryptocurrencyInvestmentsProps {
 export default function CryptocurrencyInvestments({ showFeatures = true }: CryptocurrencyInvestmentsProps) {
   return (
     <section className="relative py-24 lg:py-32 px-4 overflow-hidden bg-black">
-      {/* Animated background gradient orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-yellow-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
-      </div>
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
         <motion.div

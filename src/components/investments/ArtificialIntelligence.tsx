@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Brain, TrendingUp, Shield, Zap, Database, Network, Mail } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const features = [
@@ -75,12 +75,6 @@ const itemVariants = {
 export default function ArtificialIntelligence() {
   return (
     <section className="relative py-24 lg:py-32 px-4 overflow-hidden bg-black">
-      {/* Animated background gradient orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
-      </div>
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -165,47 +159,6 @@ export default function ArtificialIntelligence() {
             );
           })}
         </motion.div>
-        {/* Bottom CTA Section
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-20 text-center"
-        >
-          <div className="relative max-w-4xl mx-auto p-12 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-[#b28f3f]/10 via-black/50 to-[#b28f3f]/10 border border-[#b28f3f]/30 overflow-hidden">
-            <motion.div 
-              className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#b28f3f]/0 via-[#b28f3f]/20 to-[#b28f3f]/0"
-              animate={{ opacity: [0.3, 0.8, 0.3] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-playfair font-semibold mb-4 text-white">
-                Intelligence-Driven Investment Strategy
-              </h3>
-              <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                Experience the future of investment management. Our AI-powered platform combines 
-                institutional expertise with cutting-edge technology to deliver superior returns 
-                while maintaining the highest standards of security and discretion.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400">
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-[#b28f3f] rounded-full animate-pulse" />
-                  Real-time Analysis
-                </span>
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-[#b28f3f] rounded-full animate-pulse" />
-                  Secure Infrastructure
-                </span>
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-[#b28f3f] rounded-full animate-pulse" />
-                  Institutional Grade
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-        */}
         <Button variant="outline" className="bg-black border-gray-600 hover:bg-green-500 hover:border-green-500 flex items-center gap-2 w-[fit-content] mx-auto" asChild>
           <Link href="/contact">
             <Mail size={18} />
