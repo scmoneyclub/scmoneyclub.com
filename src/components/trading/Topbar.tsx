@@ -24,8 +24,8 @@ export default function TradingTopbar({ title = "Trading", chain = "ethereum", c
 
   return (
     <>
-      <div className={`sticky top-0 z-30 w-full border-b border-gray-900 bg-black/70 backdrop-blur supports-[backdrop-filter]:bg-black/50 ${className ?? ""}`}>
-        <div className="mx-auto flex w-full flex-1 h-14 items-center justify-between px-4 gap-2">
+      <div className={`sticky top-0 z-10 w-full border-b border-gray-900 bg-black/70 backdrop-blur supports-[backdrop-filter]:bg-black/50 ${className ?? ""}`}>
+        <div className="mx-auto flex w-full flex-1 h-14 items-center justify-between px-4 gap-2 pl-12">
           <h1 className="text-lg font-semibold text-white m-0">{title}</h1>
           <div className="flex flex-1 items-center justify-end gap-2">
             {showSearch && (
