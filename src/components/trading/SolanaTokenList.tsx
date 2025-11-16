@@ -16,55 +16,27 @@ interface TokenItem {
   logoURI?: string | null;
   v24hUSD?: number | null;
   v24hChangePercent?: number | null;
-  mc?: number | null; // market cap
+  mc?: number | null;
   lastTradeUnixTime?: number | null;
 }
 
 interface BirdeyeResponse {
-  success?: boolean;
-  message?: string;
   data?: {
     total?: number;
-    items?: Array<{
-      address: string;
-      symbol: string;
-      name: string;
-      decimals?: number;
-      price?: number;
-      liquidity?: number;
-      logoURI?: string | null;
-      v24hUSD?: number | null;
-      v24hChangePercent?: number | null;
-      mc?: number | null;
-      lastTradeUnixTime?: number | null;
-    }>;
-    tokens?: Array<{
-      address: string;
-      symbol: string;
-      name: string;
-      decimals?: number;
-      price?: number;
-      liquidity?: number;
-      logoURI?: string | null;
-      v24hUSD?: number | null;
-      v24hChangePercent?: number | null;
-      mc?: number | null;
-      lastTradeUnixTime?: number | null;
-    }>;
+    items?: Array<TokenItem>;
+    tokens?: Array<TokenItem>;
   };
 }
 
-interface TradingEthereumTokenListProps {
+interface SolanaTokenListProps {
   apiUrl?: string;
   limit?: number;
 }
 
-const DEFAULT_API =
-  "https://public-api.birdeye.so/defi/tokenlist?sort_by=v24hUSD&sort_type=desc&offset=0&limit=50&min_liquidity=100&ui_amount_mode=scaled";
-
+const DEFAULT_API = 'https://public-api.birdeye.so/defi/tokenlist?sort_by=mc&sort_type=desc&offset=0&limit=50&min_liquidity=100&ui_amount_mode=scaled';
 type SortKey = "mc" | "v24hUSD" | "v24hChangePercent" | "liquidity";
 
-export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }: TradingEthereumTokenListProps) {
+export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: SolanaTokenListProps) {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +56,6 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
     list.sort((a, b) => {
       const av = (a[sortKey] as number | null | undefined) ?? -Infinity;
       const bv = (b[sortKey] as number | null | undefined) ?? -Infinity;
-      // Descending
       return (bv as number) - (av as number);
     });
     return list;
@@ -99,18 +70,14 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
         const res = await axios.get<BirdeyeResponse>(apiUrl, {
           headers: {
             accept: "application/json",
-            "x-chain": "ethereum",
+            "x-chain": "solana",
             "x-api-key": process.env.NEXT_PUBLIC_BIRDEYE_API_KEY,
           },
           params: {
             limit,
           },
         });
-        if (res.data && res.data.success === false) {
-          if (isMounted) setError(res.data.message || "Request failed");
-          return;
-        }
-        const items = res.data?.data?.items ?? res.data?.data?.tokens ?? [];
+        const items = (res.data?.data?.items ?? res.data?.data?.tokens ?? []) as TokenItem[];
         if (isMounted) {
           setTokens(
             items.map((i) => ({
@@ -128,14 +95,9 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
             }))
           );
         }
-      } catch (e: any) {
-        if (!isMounted) return;
-        if (axios.isAxiosError(e)) {
-          const msg = (e.response?.data as BirdeyeResponse | undefined)?.message;
-          setError(msg || "Failed to load tokens");
-        } else {
-          setError("Failed to load tokens");
-        }
+      } catch (e) {
+        if (isMounted) setError(e instanceof Error ? e.message : "Failed to load tokens.");
+        console.error(e);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -147,10 +109,8 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
 
   const formatUsd = (n?: number | null, digits = 2) =>
     typeof n === "number" ? `$${n.toLocaleString(undefined, { maximumFractionDigits: digits })}` : "—";
-
   const formatPercent = (n?: number | null) =>
     typeof n === "number" ? `${n.toFixed(2)}%` : "—";
-
   const formatTime = (unix?: number | null) =>
     typeof unix === "number" && unix > 0 ? new Date(unix * 1000).toLocaleString() : "—";
 
@@ -158,17 +118,14 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
     <section>
       <div className="p-4">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <h2 className="text-xl font-semibold text-white">Ethereum Tokens</h2>
+          <h2 className="text-xl font-semibold text-white">Solana Tokens</h2>
           <div className="flex items-center gap-3">
             <Input
               placeholder="Search by symbol, name, or address"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <Select
-              value={sortKey}
-              onValueChange={(value) => setSortKey(value as SortKey)}
-            >
+            <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
               <SelectTrigger className="h-9 rounded-md border border-gray-800 bg-black px-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-700">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -187,9 +144,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
             <span>Loading tokens…</span>
           </div>
         )}
-        {error && !loading && (
-          <p className="text-red-400 text-sm">{error}</p>
-        )}
+        {error && !loading && <p className="text-red-400 text-sm">{error}</p>}
         {!loading && !error && (
           <div className="overflow-x-auto rounded-md border border-gray-800">
             <table className="w-full text-left text-sm">

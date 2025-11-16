@@ -3,7 +3,7 @@ import TradingTopbar from "@/components/trading/Topbar";
 import TradingSidebar from "@/components/trading/Sidebar";
 import TradingListingContainer from "@/components/trading/ListingContainer";
 
-export default function TradingPage() {
+export default function TokensPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black text-gray-300">
