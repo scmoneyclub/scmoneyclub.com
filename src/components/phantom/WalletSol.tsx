@@ -34,7 +34,7 @@ interface PhantomWalletAssetsProps {
   solana_address?: string | PublicKey;
 }
 
-export default function PhantomWalletAssets({ solana_address }: PhantomWalletAssetsProps = {}) {
+export default function PhantomWalletSol({ solana_address }: PhantomWalletAssetsProps = {}) {
   // Using Ankr's public RPC which has better rate limits
   // You can also pass a custom RPC endpoint if needed
   const { wallet, connection, isPhantomInstalled } = usePhantomWalletWithConnection();
