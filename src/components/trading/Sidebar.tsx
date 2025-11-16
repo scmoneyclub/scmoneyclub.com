@@ -55,10 +55,9 @@ export default function TradingSidebar() {
             })}
           </ul>
         </nav>
-
         {/* Footer Mini Text */}
-        <div className="mt-auto px-3 py-3 text-[10px] text-gray-500">
-          <span className="block opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">© {new Date().getFullYear()} SCMC</span>
+        <div className="mt-auto px-3 py-3 text-[10px] text-gray-300 text-center">
+          <span className="block opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">&copy; {new Date().getFullYear()} SCMC</span>
         </div>
       </div>
     </aside>
