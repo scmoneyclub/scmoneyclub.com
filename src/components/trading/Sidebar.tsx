@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LineChart, Wallet, Settings, LifeBuoy } from "lucide-react";
+import { LineChart, Wallet, Settings, LifeBuoy, User } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/trading", label: "Trading", icon: LineChart },
   { href: "/wallet", label: "Wallet", icon: Wallet },
+  { href: "/account", label: "Account", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
   { href: "/support", label: "Support", icon: LifeBuoy },
 ];

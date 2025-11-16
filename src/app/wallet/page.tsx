@@ -1,16 +1,19 @@
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import TradingTopbar from "@/components/trading/Topbar";
+import TradingSidebar from "@/components/trading/Sidebar";
 import PhantomWalletAssets from "@/components/phantom/Wallet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function WalletPage() {
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-black text-gray-300">
-      <Header />
-      <main className="w-full">
-        <PhantomWalletAssets/>
+    <div className="flex min-h-screen items-center justify-center bg-black text-gray-300">
+      <TradingSidebar />
+      <main className="w-full min-h-screen">
+        <TradingTopbar />
+        <ScrollArea className="max-h-[100vh] overflow-y-auto">
+          <PhantomWalletAssets />
+        </ScrollArea>
       </main>
-      <Footer />
     </div>
   );
 }

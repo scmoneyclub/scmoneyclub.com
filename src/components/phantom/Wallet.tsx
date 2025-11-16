@@ -35,8 +35,6 @@ const TOKEN_METADATA: Record<string, { symbol: string; name: string }> = {
 };
 
 export default function PhantomWalletAssets() {
-  // Using Ankr's public RPC which has better rate limits
-  // You can also pass a custom RPC endpoint if needed
   const { wallet, connection, isPhantomInstalled } = usePhantomWalletWithConnection();
   const [assets, setAssets] = useState<WalletAsset[]>([]);
   const [loading, setLoading] = useState(false);
@@ -196,146 +194,144 @@ export default function PhantomWalletAssets() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Wallet className="h-8 w-8 text-purple-500" />
-              Wallet Assets
-            </h1>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchWalletAssets}
-              disabled={loading}
-              className="bg-gray-900 border-gray-700 hover:bg-gray-800"
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              Refresh
-            </Button>
-          </div>
-          {/* Wallet Address */}
-          <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 mb-6 flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-400 mb-1">Wallet Address</p>
-              <p className="text-white font-mono text-sm break-all">
-                {wallet.publicKey?.toBase58()}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={copyWalletAddress}
-              className="bg-gray-800 border-gray-600 hover:bg-gray-700 shrink-0"
-              title="Copy wallet address"
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4 mr-2 text-green-500" />
-                  <span className="text-green-500">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4 mr-2" />
-                  <span>Copy</span>
-                </>
-              )}
-            </Button>
-          </div>
-          {/* Total Balance */}
-          {assets.length > 0 && (
-            <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg p-6 mb-6">
-              <p className="text-sm text-gray-400 mb-2">Total Balance</p>
-              <p className="text-3xl font-bold text-white">
-                {formatBalance(totalValue)} SOL
-              </p>
-            </div>
-          )}
+    <div className="p-4">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <Wallet className="h-8 w-8 text-purple-500" />
+            Wallet Assets
+          </h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchWalletAssets}
+            disabled={loading}
+            className="bg-gray-900 border-gray-700 hover:bg-gray-800"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Refresh
+          </Button>
         </div>
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-red-500" />
-              <p className="text-red-400">{error}</p>
-            </div>
-          </div>
-        )}
-        {/* Loading State */}
-        {loading && assets.length === 0 && (
-          <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-12 text-center">
-            <Loader2 className="h-12 w-12 text-purple-500 mx-auto mb-4 animate-spin" />
-            <p className="text-gray-400">Loading wallet assets...</p>
-          </div>
-        )}
-        {/* Assets List */}
-        {!loading && assets.length === 0 && !error && (
-          <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-12 text-center">
-            <Coins className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg mb-2">No assets found</p>
-            <p className="text-gray-500 text-sm">
-              Your wallet doesn't have any SOL or SPL tokens.
+        {/* Wallet Address */}
+        <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 mb-6 flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-gray-400 mb-1">Wallet Address</p>
+            <p className="text-white font-mono text-sm break-all">
+              {wallet.publicKey?.toBase58()}
             </p>
           </div>
-        )}
-        {/* Assets Grid */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={copyWalletAddress}
+            className="bg-gray-800 border-gray-600 hover:bg-gray-700 shrink-0"
+            title="Copy wallet address"
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 mr-2 text-green-500" />
+                <span className="text-green-500">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2" />
+                <span>Copy</span>
+              </>
+            )}
+          </Button>
+        </div>
+        {/* Total Balance */}
         {assets.length > 0 && (
-          <div className="space-y-4">
-            {assets.map((asset, index) => (
-              <div
-                key={`${asset.type}-${asset.mint || "SOL"}-${index}`}
-                className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center">
-                      <Coins className="h-6 w-6 text-purple-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">
-                        {asset.name}
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        {asset.symbol}
-                        {asset.type === "SPL" && asset.mint && (
-                          <span className="ml-2 text-xs">
-                            ({formatAddress(asset.mint)})
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold text-white">
-                      {formatBalance(asset.balance, asset.decimals)}
-                    </p>
-                    <p className="text-sm text-gray-400">{asset.symbol}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        {/* Info Footer */}
-        {assets.length > 0 && (
-          <div className="mt-8 bg-gray-900/30 border border-gray-700 rounded-lg p-4">
-            <p className="text-xs text-gray-500 text-center">
-              Token prices and values are not displayed. This is a simplified view of your wallet assets.
-              {assets.filter(a => a.type === "SPL").length > 0 && (
-                <span className="block mt-1">
-                  Some token names and symbols may be abbreviated if not found in the metadata registry.
-                </span>
-              )}
+          <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg p-6 mb-6">
+            <p className="text-sm text-gray-400 mb-2">Total Balance</p>
+            <p className="text-3xl font-bold text-white">
+              {formatBalance(totalValue)} SOL
             </p>
           </div>
         )}
       </div>
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+            <p className="text-red-400">{error}</p>
+          </div>
+        </div>
+      )}
+      {/* Loading State */}
+      {loading && assets.length === 0 && (
+        <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-12 text-center">
+          <Loader2 className="h-12 w-12 text-purple-500 mx-auto mb-4 animate-spin" />
+          <p className="text-gray-400">Loading wallet assets...</p>
+        </div>
+      )}
+      {/* Assets List */}
+      {!loading && assets.length === 0 && !error && (
+        <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-12 text-center">
+          <Coins className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-400 text-lg mb-2">No assets found</p>
+          <p className="text-gray-500 text-sm">
+            Your wallet doesn't have any SOL or SPL tokens.
+          </p>
+        </div>
+      )}
+      {/* Assets Grid */}
+      {assets.length > 0 && (
+        <div className="space-y-4">
+          {assets.map((asset, index) => (
+            <div
+              key={`${asset.type}-${asset.mint || "SOL"}-${index}`}
+              className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center">
+                    <Coins className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">
+                      {asset.name}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      {asset.symbol}
+                      {asset.type === "SPL" && asset.mint && (
+                        <span className="ml-2 text-xs">
+                          ({formatAddress(asset.mint)})
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-white">
+                    {formatBalance(asset.balance, asset.decimals)}
+                  </p>
+                  <p className="text-sm text-gray-400">{asset.symbol}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* Info Footer */}
+      {assets.length > 0 && (
+        <div className="mt-8 bg-gray-900/30 border border-gray-700 rounded-lg p-4">
+          <p className="text-xs text-gray-500 text-center">
+            Token prices and values are not displayed. This is a simplified view of your wallet assets.
+            {assets.filter(a => a.type === "SPL").length > 0 && (
+              <span className="block mt-1">
+                Some token names and symbols may be abbreviated if not found in the metadata registry.
+              </span>
+            )}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
