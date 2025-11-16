@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Wallet, LogOut, Copy, Check, ExternalLink, AlertCircle } from "lucide-react";
+import { Wallet, LogOut, Copy, Check, ExternalLink, AlertCircle, Ghost } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { usePhantomWallet } from "@/hooks/usePhantomWallet";
+import Link from "next/link";
 
 interface PhantomConnectProps {
   className?: string; // Custom className for the connect button
@@ -179,7 +180,10 @@ export default function PhantomConnect({
               )}
             </div>
             <DialogFooter>
-              <Button
+              <Button className="bg-purple-600 hover:bg-purple-700 w-full" asChild>
+                <Link href="/wallet"><Ghost className="mr-2 h-4 w-4" />View Wallet</Link>
+              </Button>
+              {/* <Button
                 variant="outline"
                 onClick={() => setShowDialog(false)}
                 className="bg-transparent border-gray-600 hover:bg-gray-800"
@@ -194,7 +198,7 @@ export default function PhantomConnect({
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 {disconnecting ? "Disconnecting..." : "Disconnect"}
-              </Button>
+              </Button> */}
             </DialogFooter>
           </DialogContent>
         </Dialog>
