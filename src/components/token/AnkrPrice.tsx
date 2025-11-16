@@ -1,9 +1,9 @@
 'use client';
 import { formatUsd } from '@/utils/formats';
-import axios from 'axios';
 import { Copy, Check } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useAnkrTokenPrice } from '@/hooks/useAnkrTokenPrice';
 
 interface AnkrPriceResult {
   usdPrice: string;
@@ -33,14 +33,13 @@ export default function TokenAnkrPrice({
   className,
 }: TokenAnkrPriceProps) {
   const [price, setPrice] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const endpoint = useMemo(() => {
-    const key = process.env.NEXT_PUBLIC_ANKR_API_KEY || '';
-    return `https://rpc.ankr.com/multichain/${encodeURIComponent(key)}`;
-  }, []);
+  const { price: hookPrice, loading, error, refresh } = useAnkrTokenPrice({
+    blockchain,
+    contractAddress,
+    autoRefreshMs,
+  });
 
   const formatAddress = (addr: string, head = 6, tail = 4) => {
     if (!addr) return '';
@@ -48,45 +47,9 @@ export default function TokenAnkrPrice({
     return `${addr.slice(0, head)}…${addr.slice(-tail)}`;
   };
 
-  const fetchPrice = async () => {
-    if (!blockchain || !contractAddress) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const body = {
-        jsonrpc: '2.0',
-        method: 'ankr_getTokenPrice',
-        params: {
-          blockchain,
-          contractAddress,
-        },
-        id: 1,
-      };
-      const res = await axios.post<AnkrRpcResponse>(endpoint, body, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (res.data.error) {
-        throw new Error(res.data.error.message || 'RPC Error');
-      }
-      const usd = res.data.result?.usdPrice ?? null;
-      setPrice(usd);
-    } catch (e: any) {
-      const msg = e?.message || 'Failed to load Ankr price';
-      setError(msg);
-      setPrice(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchPrice();
-    if (!autoRefreshMs || autoRefreshMs <= 0) return;
-    const id = setInterval(fetchPrice, autoRefreshMs);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockchain, contractAddress, autoRefreshMs]);
-
+    setPrice(hookPrice ?? null);
+  }, [hookPrice]);
 
   const onCopy = async () => {
     try {

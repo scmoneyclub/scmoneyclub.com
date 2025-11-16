@@ -3,6 +3,9 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { formatUsd } from "@/utils/formats";
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 
 interface AnkrAsset {
   balance: string;
@@ -78,15 +81,20 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ethereum_address]);
 
+  if (loading) {
+    return (
+      <Card className="bg-black">
+        <CardContent>
+          <Spinner />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <section className="p-4">
-      <div className="rounded-md border border-gray-800 bg-gray-900/40 p-3 text-gray-200">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-white text-lg m-0">DAO Wallet</h2>
-          {loading && <span className="text-[10px] text-gray-500">Loading…</span>}
-        </div>
-        <p className="text-xs text-gray-400 m-0 mb-2">Address: <span className="text-white font-mono break-all">{ethereum_address}</span></p>
-        {error && <p className="text-xs text-red-400 m-0 mb-2">{error}</p>}
+    <Card className="bg-black">
+      <CardContent>
+        {error && <p className="text-xs text-red-400 m-0">{error}</p>}
         {!error && (
           <div className="space-y-3">
             <div className="text-sm">
@@ -106,10 +114,16 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
                 <tbody>
                   {assets.map((a) => (
                     <tr key={`${a.contractAddress}-${a.tokenSymbol}`} className="border-t border-gray-800 text-gray-300">
-                      <td className="px-3 py-2">{a.tokenName}</td>
-                      <td className="px-3 py-2">{a.tokenSymbol}</td>
+                      <td className="px-3 py-2">
+                        <Link href="https://etherscan.io/" target="_blank">{a.tokenName}</Link>
+                      </td>
+                      <td className="px-3 py-2">
+                      <Link href={`/tokens/${a.tokenSymbol}`}>{a.tokenSymbol}</Link>
+                      </td>
                       <td className="px-3 py-2">{a.balance}</td>
-                      <td className="px-3 py-2">{a.balanceUsd ? formatUsd(Number(a.balanceUsd), 2) : "—"}</td>
+                      <td className="px-3 py-2">
+                        {a.balanceUsd ? formatUsd(Number(a.balanceUsd), 2) : "—"}
+                      </td>
                     </tr>
                   ))}
                   {assets.length === 0 && (
@@ -122,7 +136,7 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
             </div>
           </div>
         )}
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }
