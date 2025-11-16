@@ -99,7 +99,7 @@ export default function TokenAnkrPrice({
   };
 
   return (
-    <section className="p-4">
+    <section>
       <div className={`rounded-md border border-gray-800 bg-gray-900/40 p-3 text-gray-200 ${className ?? ''}`}>
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs text-gray-400">Ankr Price</span>

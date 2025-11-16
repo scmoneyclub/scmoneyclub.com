@@ -5,7 +5,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { formatUsd, formatPercent, formatTime } from "@/utils/formats";
+import { formatUsd, formatTime } from "@/utils/formats";
 
 interface TokenItem {
   address: string;
@@ -201,7 +201,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                 {sorted.map((t) => {
                   const up = typeof t.v24hChangePercent === "number" && t.v24hChangePercent >= 0;
                   return (
-                    <tr key={t.address} className="border-t border-gray-800 text-gray-300">
+                    <tr key={t.address} className="border-t border-gray-800 text_gray-300">
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-2">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -217,11 +217,11 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                         </div>
                       </td>
                       <td className="px-3 py-2">{formatUsd(t.price, 6)}</td>
-                      <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{t.v24hChangePercent?.toFixed?.(2) ?? '—'}%</td>
+                      <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{typeof t.liquidity === 'number' && t.v24hChangePercent !== null && t.v24hChangePercent !== undefined ? `${t.v24hChangePercent.toFixed(2)}%` : '—'}</td>
                       <td className="px-3 py-2">{formatUsd(t.v24hUSD, 0)}</td>
-                      <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toUInteger?.() ?? t.liquidity.toLocaleString() : "—"}</td>
+                      <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toLocaleString() : "—"}</td>
                       <td className="px-3 py-2">{formatUsd(t.mc, 0)}</td>
-                      <td className="px-3 py-2 whitespace-nowrap">{typeof t.lastTradeUnixTime === "number" ? formatTime(t.lastTradeUnixTime) : "—"}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{formatTime(t.lastTradeUnixTime)}</td>
                       <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td>
                     </tr>
                   );
