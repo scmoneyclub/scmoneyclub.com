@@ -2,10 +2,10 @@
 import TradingTopbar from "@/components/trading/Topbar";
 import TradingSidebar from "@/components/trading/Sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import TokenAnkrPrice from "@/components/token/AnkrPrice";
+import TokenCryptoCompareDetails from "@/components/token/CryptoCompareDetails";
 
-export default async function SingleSolanaTokenPage({ params }: { params: Promise<{ 'contract': string }> }) {
-  const { contract } = (await params);
+export default async function SingleTokenPage({ params }: { params: Promise<{ 'symbol': string }> }) {
+  const { symbol } = (await params);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black text-gray-300">
@@ -13,7 +13,7 @@ export default async function SingleSolanaTokenPage({ params }: { params: Promis
       <main className="w-full min-h-screen">
         <TradingTopbar title="Token Details" />
         <ScrollArea className="max-h-[calc(100vh-40px)] overflow-y-auto">
-          <TokenAnkrPrice blockchain="solana" contractAddress={contract} />
+          <TokenCryptoCompareDetails symbol={symbol} />
         </ScrollArea>
       </main>
     </div>

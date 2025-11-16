@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import Link from "next/link";
+import { formatUsd, formatPercent, formatTime } from "@/utils/formats";
 
 interface TokenItem {
   address: string;
@@ -120,15 +121,6 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
       isMounted = false;
     };
   }, [apiUrl, limit]);
-
-  const formatUsd = (n?: number | null, digits = 2) =>
-    typeof n === "number" ? `$${n.toLocaleString(undefined, { maximumFractionDigits: digits })}` : "—";
-
-  const formatPercent = (n?: number | null) =>
-    typeof n === "number" ? `${n.toFixed(2)}%` : "—";
-
-  const formatTime = (unix?: number | null) =>
-    typeof unix === "number" && unix > 0 ? new Date(unix * 1000).toLocaleString() : "—";
 
   return (
     <section>

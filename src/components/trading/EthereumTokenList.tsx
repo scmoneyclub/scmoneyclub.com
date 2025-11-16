@@ -1,10 +1,10 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { formatUsd, formatPercent, formatTime } from "@/utils/formats";
 
 interface TokenItem {
   address: string;
@@ -144,15 +144,6 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
       isMounted = false;
     };
   }, [apiUrl, limit]);
-
-  const formatUsd = (n?: number | null, digits = 2) =>
-    typeof n === "number" ? `$${n.toLocaleString(undefined, { maximumFractionDigits: digits })}` : "—";
-
-  const formatPercent = (n?: number | null) =>
-    typeof n === "number" ? `${n.toFixed(2)}%` : "—";
-
-  const formatTime = (unix?: number | null) =>
-    typeof unix === "number" && unix > 0 ? new Date(unix * 1000).toLocaleString() : "—";
 
   return (
     <section>

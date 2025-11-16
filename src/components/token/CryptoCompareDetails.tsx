@@ -1,7 +1,8 @@
 'use client';
+
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart, } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 interface CryptoCompareData {
   Response: string;
@@ -39,28 +40,38 @@ interface ChartDataPoint {
   close: number;
 }
 
-export default function CryptoBitcoinChart() {
+interface TokenCryptoCompareDetailsProps {
+  symbol: string; // e.g. 'SOL', 'ETH'
+  displayName?: string; // Optional pretty name; defaults to symbol
+  days?: number; // default 30
+}
+
+export default function TokenCryptoCompareDetails({ symbol = 'BTC', displayName, days = 30 }: TokenCryptoCompareDetailsProps) {
   const [data, setData] = useState<CryptoCompareData | null>(null);
   const [loading, setLoading] = useState(true);
+  const name = displayName || symbol.toUpperCase();
 
-  const fetchBitcoinData = async () => {
+  const fetchTokenData = async () => {
     try {
       setLoading(true);
       const response = await axios.get<CryptoCompareData>(
-        'https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=30&aggregate=1'
+        `https://min-api.cryptocompare.com/data/histoday?fsym=${encodeURIComponent(symbol.toUpperCase())}&tsym=USD&limit=${Math.max(
+          1,
+          days
+        )}&aggregate=1`
       );
       setData(response.data);
-      console.log('Bitcoin Chart Data:', JSON.stringify(response.data));
-    } catch (error) {
-      console.error('Error fetching Bitcoin data:', error);
+    } catch (_error) {
+      setData(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchBitcoinData();
-  }, []);
+    fetchTokenData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol, days]);
 
   const chartData: ChartDataPoint[] = useMemo(() => {
     if (!data?.Data) return [];
@@ -97,19 +108,19 @@ export default function CryptoBitcoinChart() {
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const d = payload[0].payload;
       return (
         <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold mb-2">{data.date}</p>
+          <p className="text-sm font-semibold mb-2">{d.date}</p>
           <div className="space-y-1 text-xs">
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Close:</span> {formatPrice(data.close)}
+              <span className="font-medium">Close:</span> {formatPrice(d.close)}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">High:</span> {formatPrice(data.high)}
+              <span className="font-medium">High:</span> {formatPrice(d.high)}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Low:</span> {formatPrice(data.low)}
+              <span className="font-medium">Low:</span> {formatPrice(d.low)}
             </p>
           </div>
         </div>
@@ -121,7 +132,7 @@ export default function CryptoBitcoinChart() {
   if (loading) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center">
-        <div className="text-gray-500">Loading Bitcoin data...</div>
+        <div className="text-gray-500">Loading {name} data...</div>
       </div>
     );
   }
@@ -129,20 +140,19 @@ export default function CryptoBitcoinChart() {
   if (!data || chartData.length === 0) {
     return (
       <div className="w-full h-[400px] flex items-center justify-center">
-        <div className="text-gray-500">No data available</div>
+        <div className="text-gray-500">No data available for {name}</div>
       </div>
     );
   }
 
   return (
-    <section className="bg-black py-8">
-      <div className="container mx-auto">
+    <section>
+      <div className="p-4">
         <div className="w-full space-y-4">
-          {/* Header with current price */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-white">Bitcoin (BTC)</h2>
-              <p className="text-sm">30 Day Price History</p>
+              <h2 className="text-2xl font-bold text-white">{name} ({symbol.toUpperCase()})</h2>
+              <p className="text-sm">{days} Day Price History</p>
             </div>
             <div className="flex flex-col items-end">
               <div className="text-3xl font-bold">
@@ -158,17 +168,15 @@ export default function CryptoBitcoinChart() {
               </div>
             </div>
           </div>
-          {/* Chart */}
           <div className="w-full h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                 <defs>
-                  <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  <linearGradient id="colorTokenPrice" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                {/* <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" /> */}
                 <XAxis
                   dataKey="dateShort"
                   tick={{ fill: '#6b7280', fontSize: 12 }}
@@ -185,10 +193,10 @@ export default function CryptoBitcoinChart() {
                 <Area
                   type="monotone"
                   dataKey="price"
-                  stroke="#3b82f6"
+                  stroke="#22c55e"
                   strokeWidth={2}
                   fillOpacity={1}
-                  fill="url(#colorPrice)"
+                  fill="url(#colorTokenPrice)"
                 />
               </AreaChart>
             </ResponsiveContainer>

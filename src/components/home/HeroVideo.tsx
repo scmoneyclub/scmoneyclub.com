@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Bot, Coins } from "lucide-react";
+import { ChartLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Hero() {
@@ -41,7 +41,7 @@ export default function Hero() {
         <h1 className="text-4xl sm:text-5xl lg:text-7xl font-playfair font-semibold mb-4">SC Money Club</h1>
         <p className="md:text-lg md:text-xl mb-6">A private club of action takers who want the very best out of life.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-          <Button variant="outline" className="bg-black border-gray-600 hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-colors flex items-center gap-2"
+          {/* <Button variant="outline" className="bg-black border-gray-600 hover:bg-blue-500 hover:border-blue-500 hover:text-white transition-colors flex items-center gap-2"
             size="lg"
             asChild
           >
@@ -59,7 +59,7 @@ export default function Hero() {
               <span>Cryptocurrency</span>
             </Link>
           </Button>
-          {/* <Button variant="outline" className="bg-black border-gray-600 hover:bg-yellow-500 hover:border-yellow-500 hover:text-white transition-colors flex items-center gap-2"
+          <Button variant="outline" className="bg-black border-gray-600 hover:bg-yellow-500 hover:border-yellow-500 hover:text-white transition-colors flex items-center gap-2"
             size="lg"
             asChild
           >
@@ -68,6 +68,15 @@ export default function Hero() {
               <span>Gold</span>
             </Link>
           </Button> */}
+          <Button variant="outline" className="bg-black border-gray-600 hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-colors flex items-center gap-2"
+            size="lg"
+            asChild
+          >
+            <Link href="/trading">
+              <ChartLine size={18} />
+              <span>Access Trading Platform</span>
+            </Link>
+          </Button>
         </div>
       </div>
       {/* Optional dark overlay */}

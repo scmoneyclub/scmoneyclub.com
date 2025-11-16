@@ -50,7 +50,7 @@ export default function TradingTopbar({ title = "Trading", className }: TradingT
                 <span>Secure Login</span>
               </Button>
             )}
-            <Link href="/profile" aria-label="Profile">
+            <Link href="/account" aria-label="Account">
               <Button variant="outline" size="sm" className="bg-black border-gray-700 hover:bg-gray-900 text-gray-200">
                 <User className="h-4 w-4" />
               </Button>
