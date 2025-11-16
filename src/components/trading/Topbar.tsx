@@ -22,7 +22,7 @@ export default function TradingTopbar({ title = "Trading", className }: TradingT
       <div className={`sticky top-0 z-30 w-full border-b border-gray-900 bg-black/70 backdrop-blur supports-[backdrop-filter]:bg-black/50 ${className ?? ""}`}>
         <div className="mx-auto flex h-14 items-center justify-between px-4">
           <h1 className="text-lg font-semibold text-white m-0">{title}</h1>
-          <div>
+          <div className="flex items-center gap-2">
             {/* Secure Login or Wallet (Desktop) */}
             {wallet.connected && wallet.publicKey ? (
               <div className="hidden lg:inline-flex ml-4">

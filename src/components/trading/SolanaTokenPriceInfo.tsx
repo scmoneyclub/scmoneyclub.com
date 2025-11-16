@@ -5,6 +5,8 @@ import axios from "axios";
 import { Loader2, ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 interface PriceResponse {
+  success: boolean;
+  message?: string;
   data?: {
     isScaledUiToken: boolean;
     value: number; // price in USD (assumed)
@@ -13,7 +15,6 @@ interface PriceResponse {
     priceChange24h?: number; // percent
     priceInNative?: number; // priced in SOL
   };
-  success: boolean;
 }
 
 interface SolanaTokenPriceInfoProps {
@@ -50,11 +51,19 @@ export default function SolanaTokenPriceInfo({
             "x-api-key": process.env.NEXT_PUBLIC_BIRDEYE_API_KEY,
           },
         });
-        if (isMounted) {
-          setData(res.data?.data ?? null);
+        if (!res.data.success) {
+          if (isMounted) setError(res.data.message || "Request failed");
+          return;
         }
-      } catch (e) {
-        if (isMounted) setError("Failed to load price");
+        if (isMounted) setData(res.data?.data ?? null);
+      } catch (e: any) {
+        if (!isMounted) return;
+        if (axios.isAxiosError(e)) {
+          const msg = (e.response?.data as PriceResponse | undefined)?.message;
+          setError(msg || "Failed to load price");
+        } else {
+          setError("Failed to load price");
+        }
       } finally {
         if (isMounted) setLoading(false);
       }

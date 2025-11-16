@@ -5,6 +5,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import Link from "next/link";
 
 interface TokenItem {
   address: string;
@@ -21,6 +22,8 @@ interface TokenItem {
 }
 
 interface BirdeyeResponse {
+  success?: boolean;
+  message?: string;
   data?: {
     total?: number;
     items?: Array<TokenItem>;
@@ -33,7 +36,9 @@ interface SolanaTokenListProps {
   limit?: number;
 }
 
-const DEFAULT_API = 'https://public-api.birdeye.so/defi/tokenlist?sort_by=mc&sort_type=desc&offset=0&limit=50&min_liquidity=100&ui_amount_mode=scaled';
+const DEFAULT_API =
+  "https://public-api.birdeye.so/defi/tokenlist?sort_by=mc&sort_type=desc&offset=0&limit=50&min_liquidity=100&ui_amount_mode=scaled";
+
 type SortKey = "mc" | "v24hUSD" | "v24hChangePercent" | "liquidity";
 
 export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: SolanaTokenListProps) {
@@ -77,6 +82,10 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
             limit,
           },
         });
+        if (res.data && res.data.success === false) {
+          if (isMounted) setError(res.data.message || "Request failed");
+          return;
+        }
         const items = (res.data?.data?.items ?? res.data?.data?.tokens ?? []) as TokenItem[];
         if (isMounted) {
           setTokens(
@@ -95,9 +104,14 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
             }))
           );
         }
-      } catch (e) {
-        if (isMounted) setError(e instanceof Error ? e.message : "Failed to load tokens.");
-        console.error(e);
+      } catch (e: any) {
+        if (!isMounted) return;
+        if (axios.isAxiosError(e)) {
+          const msg = (e.response?.data as BirdeyeResponse | undefined)?.message;
+          setError(msg || "Failed to load tokens");
+        } else {
+          setError("Failed to load tokens");
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -109,8 +123,10 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
 
   const formatUsd = (n?: number | null, digits = 2) =>
     typeof n === "number" ? `$${n.toLocaleString(undefined, { maximumFractionDigits: digits })}` : "—";
+
   const formatPercent = (n?: number | null) =>
     typeof n === "number" ? `${n.toFixed(2)}%` : "—";
+
   const formatTime = (unix?: number | null) =>
     typeof unix === "number" && unix > 0 ? new Date(unix * 1000).toLocaleString() : "—";
 
@@ -166,7 +182,7 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                   return (
                     <tr key={t.address} className="border-t border-gray-800 text-gray-300">
                       <td className="px-3 py-2">
-                        <div className="flex items-center gap-2">
+                        <Link href={`/solana/${t.address}`} className="flex items-center gap-2 group hover:text-white">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           {t.logoURI ? (
                             <img src={t.logoURI} alt={t.symbol} className="h-6 w-6 rounded-full" />
@@ -174,10 +190,10 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                             <div className="h-6 w-6 rounded-full bg-gray-800" />
                           )}
                           <div className="flex flex-col">
-                            <span className="text-white font-medium">{t.symbol}</span>
+                            <span className="text-white font-medium group-hover:underline">{t.symbol}</span>
                             <span className="text-xs text-gray-400">{t.name}</span>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="px-3 py-2">{formatUsd(t.price, 6)}</td>
                       <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{formatPercent(t.v24hChangePercent)}</td>
