@@ -6,6 +6,8 @@ import { Wallet, Loader2, RefreshCw, Coins, AlertCircle, Copy, Check } from "luc
 import { Button } from "@/components/ui/button";
 import { usePhantomWalletWithConnection } from "@/hooks/usePhantomWallet";
 import PhantomConnect from "@/components/phantom/Connect";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import PhantomWalletManageTokens from "@/components/phantom/ManageTokens";
 
 interface TokenAccount {
   mint: string;
@@ -41,6 +43,7 @@ export default function PhantomWalletAssets() {
   const [error, setError] = useState<string | null>(null);
   const [totalValue, setTotalValue] = useState<number>(0);
   const [copied, setCopied] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
 
   const fetchWalletAssets = useCallback(async () => {
     if (!wallet.publicKey || !connection) {
@@ -194,8 +197,8 @@ export default function PhantomWalletAssets() {
   }
 
   return (
+    <>
     <div className="p-4">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
@@ -283,41 +286,52 @@ export default function PhantomWalletAssets() {
       )}
       {/* Assets Grid */}
       {assets.length > 0 && (
-        <div className="space-y-4">
-          {assets.map((asset, index) => (
-            <div
-              key={`${asset.type}-${asset.mint || "SOL"}-${index}`}
-              className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center">
-                    <Coins className="h-6 w-6 text-purple-400" />
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <Wallet className="h-8 w-8 text-purple-500" />
+              Tokens
+            </h2>
+            <Button onClick={() => setManageOpen(true)} className="bg-gray-900 border border-gray-700 hover:bg-gray-800">
+              Manage Tokens
+            </Button>
+          </div>
+          <div className="space-y-4">
+            {assets.map((asset, index) => (
+              <div
+                key={`${asset.type}-${asset.mint || "SOL"}-${index}`}
+                className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center">
+                      <Coins className="h-6 w-6 text-purple-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {asset.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        {asset.symbol}
+                        {asset.type === "SPL" && asset.mint && (
+                          <span className="ml-2 text-xs">
+                            ({formatAddress(asset.mint)})
+                          </span>
+                        )}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">
-                      {asset.name}
-                    </h3>
-                    <p className="text-sm text-gray-400">
-                      {asset.symbol}
-                      {asset.type === "SPL" && asset.mint && (
-                        <span className="ml-2 text-xs">
-                          ({formatAddress(asset.mint)})
-                        </span>
-                      )}
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-white">
+                      {formatBalance(asset.balance, asset.decimals)}
                     </p>
+                    <p className="text-sm text-gray-400">{asset.symbol}</p>
                   </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-white">
-                    {formatBalance(asset.balance, asset.decimals)}
-                  </p>
-                  <p className="text-sm text-gray-400">{asset.symbol}</p>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
       {/* Info Footer */}
       {assets.length > 0 && (
@@ -333,5 +347,16 @@ export default function PhantomWalletAssets() {
         </div>
       )}
     </div>
+    {/* Manage Tokens Dialog */}
+    <Dialog open={manageOpen} onOpenChange={setManageOpen}>
+      <DialogContent className="bg-black text-white border border-gray-800">
+        <DialogHeader>
+          <DialogTitle>Manage Tokens</DialogTitle>
+          <DialogDescription>Enable, disable, or reorder tokens in your wallet view.</DialogDescription>
+        </DialogHeader>
+        <PhantomWalletManageTokens assets={assets} onClose={() => setManageOpen(false)} />
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
