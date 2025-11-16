@@ -10,7 +10,7 @@ export default function WalletPage() {
       <TradingSidebar />
       <main className="w-full min-h-screen">
         <TradingTopbar />
-        <ScrollArea className="max-h-[100vh] overflow-y-auto">
+        <ScrollArea className="max-h-[calc(100vh-56px)] overflow-y-auto">
           <PhantomWalletAssets />
         </ScrollArea>
       </main>

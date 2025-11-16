@@ -1,14 +1,12 @@
 "use client";
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import axios from "axios";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import Link from "next/link";
 
-interface TradingSearchDialogProps {
+interface SolanaSearchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -22,12 +20,11 @@ interface JupiterTokenItem {
   usdPrice?: number;
 }
 
-export default function TradingSearchDialog({ open, onOpenChange }: TradingSearchDialogProps) {
+export default function SolanaSearchDialog({ open, onOpenChange }: SolanaSearchDialogProps) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<JupiterTokenItem[]>([]);
-  const [chain, setChain] = useState<"ethereum" | "solana">("ethereum");
 
   useEffect(() => {
     if (!open) {
@@ -41,14 +38,6 @@ export default function TradingSearchDialog({ open, onOpenChange }: TradingSearc
   const searchTokens = async () => {
     const q = query.trim();
     if (!q) return;
-
-    // Jupiter token search is for Solana; guard when non-Solana selected
-    if (chain !== "solana") {
-      setError("Jupiter token search supports Solana only");
-      setResults([]);
-      return;
-    }
-
     setLoading(true);
     setError(null);
     try {
@@ -58,8 +47,6 @@ export default function TradingSearchDialog({ open, onOpenChange }: TradingSearc
       });
       const items = Array.isArray(res.data) ? res.data : [];
       setResults(items);
-      // optional debug
-      // console.log("Jupiter search results", items);
     } catch (e: any) {
       const msg = (e?.response?.data as { message?: string } | undefined)?.message || "Search failed";
       setError(msg);
@@ -73,20 +60,11 @@ export default function TradingSearchDialog({ open, onOpenChange }: TradingSearc
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-black text-white border border-gray-900">
         <DialogHeader>
-          <DialogTitle>Search</DialogTitle>
-          <DialogDescription>Search for tokens and market data by providing a name, symbol, token address, or market address.</DialogDescription>
+          <DialogTitle>Search Tokens (Solana)</DialogTitle>
+          <DialogDescription>Search Solana tokens by name, symbol, or mint address.</DialogDescription>
         </DialogHeader>
         <div className="flex items-center gap-2 border border-gray-700 rounded-md p-2">
           <Search className="h-4 w-4 text-gray-400" />
-          <Select value={chain} onValueChange={(v) => setChain(v as "ethereum" | "solana") }>
-            <SelectTrigger className="h-8 w-[130px] rounded-md border border-gray-800 bg-black px-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-700">
-              <SelectValue placeholder="Chain" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ethereum">Ethereum</SelectItem>
-              <SelectItem value="solana">Solana</SelectItem>
-            </SelectContent>
-          </Select>
           <Input
             autoFocus
             placeholder="Type a symbol (e.g. SOL) and press Enter"

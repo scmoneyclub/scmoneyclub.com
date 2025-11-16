@@ -110,8 +110,6 @@ export default function TokenAnkrChart({
     return null;
   };
 
-  function lastIndex<T>(arr: T[]) { return Math.max(0, arr.length - 1); }
-
   return (
     <section>
       <div className="p-4">

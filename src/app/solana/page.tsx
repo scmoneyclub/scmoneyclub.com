@@ -10,7 +10,7 @@ export default function SolanaPage() {
     <div className="flex min-h-screen items-center justify-center bg-black text-gray-300">
       <TradingSidebar />
       <main className="w-full min-h-screen">
-        <TradingTopbar />
+        <TradingTopbar title="Solana" chain="solana" />
         <ScrollArea className="max-h-[calc(100vh-40px)] overflow-y-auto">
           <SolanaTokenList />
         </ScrollArea>
