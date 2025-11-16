@@ -23,7 +23,7 @@ export default function TradingSidebar() {
     >
       <div className="flex h-full flex-col items-stretch transition-[width] duration-300 ease-out w-[64px] group-hover/sidebar:w-[220px]">
         {/* Logo */}
-        <div className="flex items-center gap-3 px-3 py-4 border-b border-gray-900">
+        <div className="flex items-center justify-center gap-2 p-2 border-b border-gray-900">
           <div className="relative h-10 w-10 shrink-0">
             <Image src="/scmc-logo.svg" alt="SCMC" fill sizes="40px" className="object-contain" />
           </div>
@@ -31,9 +31,8 @@ export default function TradingSidebar() {
             <span className="text-white font-bold text-lg whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">SC Money Club</span>
           </div>
         </div>
-
         {/* Nav */}
-        <nav className="flex-1 py-3">
+        <nav className="flex-1 p-2">
           <ul className="flex flex-col gap-1">
             {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
               const active = pathname === href;
@@ -41,7 +40,7 @@ export default function TradingSidebar() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`mx-2 flex items-center gap-3 rounded-md px-3 py-2 transition-colors
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 transition-colors
                       ${active ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-900/70 hover:text-white"}`}
                     title={label}
                   >
@@ -56,7 +55,7 @@ export default function TradingSidebar() {
           </ul>
         </nav>
         {/* Footer Mini Text */}
-        <div className="mt-auto px-3 py-3 text-[10px] text-gray-300 text-center">
+        <div className="mt-auto p-2 text-[10px] text-gray-300 text-center">
           <span className="block opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">&copy; {new Date().getFullYear()} SCMC</span>
         </div>
       </div>
