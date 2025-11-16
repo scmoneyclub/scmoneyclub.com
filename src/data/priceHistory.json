@@ -1,0 +1,513 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+      "quotes": [
+          {
+              "timestamp": 1754719967,
+              "blockHeight": 23101631,
+              "usdPrice": "19.83904616604112"
+          },
+          {
+              "timestamp": 1754806367,
+              "blockHeight": 23108792,
+              "usdPrice": "19.01895202556688"
+          },
+          {
+              "timestamp": 1754892767,
+              "blockHeight": 23115940,
+              "usdPrice": "18.25056160321507"
+          },
+          {
+              "timestamp": 1754979167,
+              "blockHeight": 23123097,
+              "usdPrice": "17.230015189684817"
+          },
+          {
+              "timestamp": 1755065567,
+              "blockHeight": 23130258,
+              "usdPrice": "17.972071448500936"
+          },
+          {
+              "timestamp": 1755151967,
+              "blockHeight": 23137427,
+              "usdPrice": "17.996389859114073"
+          },
+          {
+              "timestamp": 1755238367,
+              "blockHeight": 23144568,
+              "usdPrice": "16.586678063860808"
+          },
+          {
+              "timestamp": 1755324767,
+              "blockHeight": 23151733,
+              "usdPrice": "17.218186021273585"
+          },
+          {
+              "timestamp": 1755411167,
+              "blockHeight": 23158906,
+              "usdPrice": "16.84296898628966"
+          },
+          {
+              "timestamp": 1755497567,
+              "blockHeight": 23166077,
+              "usdPrice": "15.946768805827400001"
+          },
+          {
+              "timestamp": 1755583967,
+              "blockHeight": 23173248,
+              "usdPrice": "15.6824548011683249996"
+          },
+          {
+              "timestamp": 1755670367,
+              "blockHeight": 23180420,
+              "usdPrice": "15.3881788700392880005"
+          },
+          {
+              "timestamp": 1755756767,
+              "blockHeight": 23187590,
+              "usdPrice": "15.538500062868607"
+          },
+          {
+              "timestamp": 1755843167,
+              "blockHeight": 23194743,
+              "usdPrice": "15.06507324587223"
+          },
+          {
+              "timestamp": 1755929567,
+              "blockHeight": 23201918,
+              "usdPrice": "15.954527164055144"
+          },
+          {
+              "timestamp": 1756015967,
+              "blockHeight": 23209078,
+              "usdPrice": "15.252455947177656"
+          },
+          {
+              "timestamp": 1756102367,
+              "blockHeight": 23216249,
+              "usdPrice": "15.080339983919872001"
+          },
+          {
+              "timestamp": 1756188767,
+              "blockHeight": 23223418,
+              "usdPrice": "14.1535367785764540005"
+          },
+          {
+              "timestamp": 1756275167,
+              "blockHeight": 23230591,
+              "usdPrice": "14.6746494055836099995"
+          },
+          {
+              "timestamp": 1756361567,
+              "blockHeight": 23237748,
+              "usdPrice": "14.810839113309540001"
+          },
+          {
+              "timestamp": 1756447967,
+              "blockHeight": 23244912,
+              "usdPrice": "14.693764673104466999"
+          },
+          {
+              "timestamp": 1756534367,
+              "blockHeight": 23252085,
+              "usdPrice": "14.276919786640647"
+          },
+          {
+              "timestamp": 1756620767,
+              "blockHeight": 23259256,
+              "usdPrice": "14.415099630491762"
+          },
+          {
+              "timestamp": 1756707167,
+              "blockHeight": 23266414,
+              "usdPrice": "13.551199910731338999"
+          },
+          {
+              "timestamp": 1756793567,
+              "blockHeight": 23273553,
+              "usdPrice": "13.624679402319817"
+          },
+          {
+              "timestamp": 1756879967,
+              "blockHeight": 23280713,
+              "usdPrice": "13.416358068672924"
+          },
+          {
+              "timestamp": 1756966367,
+              "blockHeight": 23287880,
+              "usdPrice": "13.524895243945788999"
+          },
+          {
+              "timestamp": 1757052767,
+              "blockHeight": 23295041,
+              "usdPrice": "13.685910117685686"
+          },
+          {
+              "timestamp": 1757139167,
+              "blockHeight": 23302196,
+              "usdPrice": "13.832342107303297001"
+          },
+          {
+              "timestamp": 1757225567,
+              "blockHeight": 23309348,
+              "usdPrice": "14.76971318840635"
+          },
+          {
+              "timestamp": 1757311967,
+              "blockHeight": 23316507,
+              "usdPrice": "14.435394310867957001"
+          },
+          {
+              "timestamp": 1757398367,
+              "blockHeight": 23323666,
+              "usdPrice": "14.76641888617826"
+          },
+          {
+              "timestamp": 1757484767,
+              "blockHeight": 23330822,
+              "usdPrice": "15.019679710578446999"
+          },
+          {
+              "timestamp": 1757571167,
+              "blockHeight": 23337952,
+              "usdPrice": "15.101548762644819999"
+          },
+          {
+              "timestamp": 1757657567,
+              "blockHeight": 23345109,
+              "usdPrice": "15.61523995474319"
+          },
+          {
+              "timestamp": 1757743967,
+              "blockHeight": 23352277,
+              "usdPrice": "15.6419731922469030004"
+          },
+          {
+              "timestamp": 1757830367,
+              "blockHeight": 23359449,
+              "usdPrice": "15.65937556311688"
+          },
+          {
+              "timestamp": 1757916767,
+              "blockHeight": 23366611,
+              "usdPrice": "15.143182386979246001"
+          },
+          {
+              "timestamp": 1758003167,
+              "blockHeight": 23373757,
+              "usdPrice": "14.431518208092699999"
+          },
+          {
+              "timestamp": 1758089567,
+              "blockHeight": 23380930,
+              "usdPrice": "14.8205566188416270005"
+          },
+          {
+              "timestamp": 1758175967,
+              "blockHeight": 23388096,
+              "usdPrice": "15.228835726572045"
+          },
+          {
+              "timestamp": 1758262367,
+              "blockHeight": 23395257,
+              "usdPrice": "15.349733337940436001"
+          },
+          {
+              "timestamp": 1758348767,
+              "blockHeight": 23402416,
+              "usdPrice": "14.850960430122867999"
+          },
+          {
+              "timestamp": 1758435167,
+              "blockHeight": 23409557,
+              "usdPrice": "14.817996856691804999"
+          },
+          {
+              "timestamp": 1758521567,
+              "blockHeight": 23416706,
+              "usdPrice": "13.08337198508887"
+          },
+          {
+              "timestamp": 1758607967,
+              "blockHeight": 23423862,
+              "usdPrice": "13.193376319192883"
+          },
+          {
+              "timestamp": 1758694367,
+              "blockHeight": 23431029,
+              "usdPrice": "13.342864953918239"
+          },
+          {
+              "timestamp": 1758780767,
+              "blockHeight": 23438186,
+              "usdPrice": "12.8310351579284300004"
+          },
+          {
+              "timestamp": 1758867167,
+              "blockHeight": 23445328,
+              "usdPrice": "12.4317950353056980006"
+          },
+          {
+              "timestamp": 1758953567,
+              "blockHeight": 23452478,
+              "usdPrice": "12.873104794262221"
+          },
+          {
+              "timestamp": 1759039967,
+              "blockHeight": 23459635,
+              "usdPrice": "12.599433527526022"
+          },
+          {
+              "timestamp": 1759126367,
+              "blockHeight": 23466782,
+              "usdPrice": "12.911679864608619"
+          },
+          {
+              "timestamp": 1759212767,
+              "blockHeight": 23473944,
+              "usdPrice": "12.93118693937356"
+          },
+          {
+              "timestamp": 1759299167,
+              "blockHeight": 23481093,
+              "usdPrice": "12.760864138397074999"
+          },
+          {
+              "timestamp": 1759385567,
+              "blockHeight": 23488237,
+              "usdPrice": "14.465827214629814"
+          },
+          {
+              "timestamp": 1759471967,
+              "blockHeight": 23495384,
+              "usdPrice": "15.7915719563247599995"
+          },
+          {
+              "timestamp": 1759558367,
+              "blockHeight": 23502546,
+              "usdPrice": "15.094106137549572"
+          },
+          {
+              "timestamp": 1759644767,
+              "blockHeight": 23509700,
+              "usdPrice": "15.290025847943336"
+          },
+          {
+              "timestamp": 1759731167,
+              "blockHeight": 23516863,
+              "usdPrice": "14.854939796256227"
+          },
+          {
+              "timestamp": 1759817567,
+              "blockHeight": 23524009,
+              "usdPrice": "15.344585807724613"
+          },
+          {
+              "timestamp": 1759903967,
+              "blockHeight": 23531171,
+              "usdPrice": "14.461241426765425"
+          },
+          {
+              "timestamp": 1759990367,
+              "blockHeight": 23538314,
+              "usdPrice": "14.376372235439794"
+          },
+          {
+              "timestamp": 1760076767,
+              "blockHeight": 23545468,
+              "usdPrice": "15.549379714088802"
+          },
+          {
+              "timestamp": 1760163167,
+              "blockHeight": 23552616,
+              "usdPrice": "11.49884614517133"
+          },
+          {
+              "timestamp": 1760249567,
+              "blockHeight": 23559775,
+              "usdPrice": "11.247322425367853"
+          },
+          {
+              "timestamp": 1760335967,
+              "blockHeight": 23566930,
+              "usdPrice": "12.402024112380539"
+          },
+          {
+              "timestamp": 1760422367,
+              "blockHeight": 23574078,
+              "usdPrice": "12.283987799215654"
+          },
+          {
+              "timestamp": 1760508767,
+              "blockHeight": 23581226,
+              "usdPrice": "12.660138334692205"
+          },
+          {
+              "timestamp": 1760595167,
+              "blockHeight": 23588369,
+              "usdPrice": "11.789280837615272001"
+          },
+          {
+              "timestamp": 1760681567,
+              "blockHeight": 23595514,
+              "usdPrice": "11.448273169358556"
+          },
+          {
+              "timestamp": 1760767967,
+              "blockHeight": 23602672,
+              "usdPrice": "11.151568661647628999"
+          },
+          {
+              "timestamp": 1760854367,
+              "blockHeight": 23609815,
+              "usdPrice": "11.134807765860755"
+          },
+          {
+              "timestamp": 1760940767,
+              "blockHeight": 23616957,
+              "usdPrice": "11.579223653556203"
+          },
+          {
+              "timestamp": 1761027167,
+              "blockHeight": 23624080,
+              "usdPrice": "10.931767285340619001"
+          },
+          {
+              "timestamp": 1761113567,
+              "blockHeight": 23631206,
+              "usdPrice": "11.060812395897069"
+          },
+          {
+              "timestamp": 1761199967,
+              "blockHeight": 23638340,
+              "usdPrice": "10.860612053642538"
+          },
+          {
+              "timestamp": 1761286367,
+              "blockHeight": 23645461,
+              "usdPrice": "11.1256776615825"
+          },
+          {
+              "timestamp": 1761372767,
+              "blockHeight": 23652608,
+              "usdPrice": "11.041011046539281"
+          },
+          {
+              "timestamp": 1761459167,
+              "blockHeight": 23659769,
+              "usdPrice": "11.089637923003156999"
+          },
+          {
+              "timestamp": 1761545567,
+              "blockHeight": 23666918,
+              "usdPrice": "12.510454289650718001"
+          },
+          {
+              "timestamp": 1761631967,
+              "blockHeight": 23674061,
+              "usdPrice": "11.6794443063198259995"
+          },
+          {
+              "timestamp": 1761718367,
+              "blockHeight": 23681188,
+              "usdPrice": "11.26651618961326"
+          },
+          {
+              "timestamp": 1761804767,
+              "blockHeight": 23688334,
+              "usdPrice": "11.06479834933878"
+          },
+          {
+              "timestamp": 1761891167,
+              "blockHeight": 23695476,
+              "usdPrice": "10.572197315514374"
+          },
+          {
+              "timestamp": 1761977567,
+              "blockHeight": 23702622,
+              "usdPrice": "10.489404006488139"
+          },
+          {
+              "timestamp": 1762063967,
+              "blockHeight": 23709774,
+              "usdPrice": "10.653316730305629"
+          },
+          {
+              "timestamp": 1762150367,
+              "blockHeight": 23716929,
+              "usdPrice": "10.026071468044468"
+          },
+          {
+              "timestamp": 1762236767,
+              "blockHeight": 23724090,
+              "usdPrice": "9.239495892645024"
+          },
+          {
+              "timestamp": 1762323167,
+              "blockHeight": 23731234,
+              "usdPrice": "9.11448370383002"
+          },
+          {
+              "timestamp": 1762409567,
+              "blockHeight": 23738375,
+              "usdPrice": "9.026906842812703"
+          },
+          {
+              "timestamp": 1762495967,
+              "blockHeight": 23745529,
+              "usdPrice": "9.123628241998569"
+          },
+          {
+              "timestamp": 1762582367,
+              "blockHeight": 23752676,
+              "usdPrice": "9.586699541513999"
+          },
+          {
+              "timestamp": 1762668767,
+              "blockHeight": 23759838,
+              "usdPrice": "10.722005894103624"
+          },
+          {
+              "timestamp": 1762755167,
+              "blockHeight": 23766993,
+              "usdPrice": "10.642511804714413"
+          },
+          {
+              "timestamp": 1762841567,
+              "blockHeight": 23774133,
+              "usdPrice": "10.098121127054709"
+          },
+          {
+              "timestamp": 1762927967,
+              "blockHeight": 23781281,
+              "usdPrice": "9.520806668540151"
+          },
+          {
+              "timestamp": 1763014367,
+              "blockHeight": 23788417,
+              "usdPrice": "9.372785167797794001"
+          },
+          {
+              "timestamp": 1763100767,
+              "blockHeight": 23795563,
+              "usdPrice": "8.413521284567507"
+          },
+          {
+              "timestamp": 1763187167,
+              "blockHeight": 23802723,
+              "usdPrice": "8.32117362788792"
+          },
+          {
+              "timestamp": 1763273567,
+              "blockHeight": 23809877,
+              "usdPrice": "8.242209104823314"
+          }
+      ],
+      "syncStatus": {
+          "timestamp": 1763273567,
+          "lag": "-9s",
+          "status": "synced"
+      }
+  }
+}

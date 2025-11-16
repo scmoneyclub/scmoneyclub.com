@@ -165,7 +165,7 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                   <th className="px-3 py-2">Liquidity</th>
                   <th className="px-3 py-2">Market Cap</th>
                   <th className="px-3 py-2">Last Trade</th>
-                  <th className="px-3 py-2">Address</th>
+                  {/* <th className="px-3 py-2">Address</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -193,7 +193,7 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                       <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toLocaleString() : "—"}</td>
                       <td className="px-3 py-2">{formatUsd(t.mc, 0)}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{formatTime(t.lastTradeUnixTime)}</td>
-                      <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td>
+                      {/* <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td> */}
                     </tr>
                   );
                 })}

@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
@@ -216,11 +217,11 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                         </div>
                       </td>
                       <td className="px-3 py-2">{formatUsd(t.price, 6)}</td>
-                      <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{formatPercent(t.v24hChangePercent)}</td>
+                      <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{t.v24hChangePercent?.toFixed?.(2) ?? '—'}%</td>
                       <td className="px-3 py-2">{formatUsd(t.v24hUSD, 0)}</td>
-                      <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toLocaleString() : "—"}</td>
+                      <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toUInteger?.() ?? t.liquidity.toLocaleString() : "—"}</td>
                       <td className="px-3 py-2">{formatUsd(t.mc, 0)}</td>
-                      <td className="px-3 py-2 whitespace-nowrap">{formatTime(t.lastTradeUnixTime)}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{typeof t.lastTradeUnixTime === "number" ? formatTime(t.lastTradeUnixTime) : "—"}</td>
                       <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td>
                     </tr>
                   );
