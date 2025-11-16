@@ -4,25 +4,21 @@ import Image from 'next/image';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-
   const investmentLinks = [
-    { name: 'Artificial Intelligence', href: '/investments/artificial-intelligence', icon: Bot },
-    { name: 'Cryptocurrency', href: '/investments/crypto', icon: Coins },
-    // { name: 'Gold', href: '/investments/gold', icon: Gem },
+    { name: 'Artificial Intelligence', href: '#', icon: Bot },
+    { name: 'Cryptocurrency', href: '#', icon: Coins },
   ];
-
   const companyLinks = [
-    { name: 'About', href: '/about' },
+    { name: 'Trading', href: '/trading' },
+    { name: 'DAO', href: '/dao' },
     { name: 'Join', href: '/join' },
     { name: 'Login', href: '/login' },
     { name: 'Contact', href: '/contact' },
   ];
-
   const legalLinks = [
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Use', href: '/terms' },
   ];
-
   const socialLinks = [
     { name: 'Twitter', href: 'https://x.com/scmoneyclub', icon: Twitter },
     { name: 'Instagram', href: 'http://instagram.com/scmoneyclub', icon: Instagram },

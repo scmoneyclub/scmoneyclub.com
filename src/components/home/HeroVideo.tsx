@@ -11,7 +11,7 @@ export default function Hero() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="relative min-h-[500px] lg:min-h-screen flex items-center justify-center text-center overflow-hidden"
+      className="relative h-[100vh] lg:min-h-screen flex items-center justify-center text-center overflow-hidden"
       style={{
         backgroundImage: `url('/scms-circuit-board.jpg')`,
         backgroundSize: 'cover',

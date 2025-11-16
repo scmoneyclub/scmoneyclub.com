@@ -1,5 +1,5 @@
 'use client';
-import { formatUsd } from '@/utils/formats';
+import { formatContractAddress, formatUsd } from '@/utils/formats';
 import { Copy, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -41,12 +41,6 @@ export default function TokenAnkrPrice({
     autoRefreshMs,
   });
 
-  const formatAddress = (addr: string, head = 6, tail = 4) => {
-    if (!addr) return '';
-    if (addr.length <= head + tail) return addr;
-    return `${addr.slice(0, head)}…${addr.slice(-tail)}`;
-  };
-
   useEffect(() => {
     setPrice(hookPrice ?? null);
   }, [hookPrice]);
@@ -73,7 +67,7 @@ export default function TokenAnkrPrice({
           <p className="m-0 flex items-center gap-2">
             <span>Contract:</span>
             <Button variant="ghost" onClick={onCopy} className="p-0 h-auto hover:bg-transparent" title="Copy contract address">
-              <span className="text-white font-mono">{formatAddress(contractAddress)}</span>
+              <span className="text-white font-mono">{formatContractAddress(contractAddress)}</span>
               {copied ? <Check className="w-4 h-4 text-green-500 ml-1" /> : <Copy className="w-4 h-4 ml-1" />}
             </Button>
           </p>

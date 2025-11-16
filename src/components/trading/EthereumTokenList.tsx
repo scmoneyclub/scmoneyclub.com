@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { formatUsd, formatTime } from "@/utils/formats";
+import Link from "next/link";
 
 interface TokenItem {
   address: string;
@@ -194,7 +195,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                   <th className="px-3 py-2">Liquidity</th>
                   <th className="px-3 py-2">Market Cap</th>
                   <th className="px-3 py-2">Last Trade</th>
-                  <th className="px-3 py-2">Address</th>
+                  {/* <th className="px-3 py-2">Address</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -203,7 +204,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                   return (
                     <tr key={t.address} className="border-t border-gray-800 text_gray-300">
                       <td className="px-3 py-2">
-                        <div className="flex items-center gap-2">
+                        <Link href={`/ethereum/${t.address}`} className="flex items-center gap-2">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           {t.logoURI ? (
                             <img src={t.logoURI} alt={t.symbol} className="h-6 w-6 rounded-full" />
@@ -214,7 +215,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                             <span className="text-white font-medium">{t.symbol}</span>
                             <span className="text-xs text-gray-400">{t.name}</span>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="px-3 py-2">{formatUsd(t.price, 6)}</td>
                       <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{typeof t.liquidity === 'number' && t.v24hChangePercent !== null && t.v24hChangePercent !== undefined ? `${t.v24hChangePercent.toFixed(2)}%` : '—'}</td>
@@ -222,7 +223,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                       <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toLocaleString() : "—"}</td>
                       <td className="px-3 py-2">{formatUsd(t.mc, 0)}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{formatTime(t.lastTradeUnixTime)}</td>
-                      <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td>
+                      {/* <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td> */}
                     </tr>
                   );
                 })}

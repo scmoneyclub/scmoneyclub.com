@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Menu, X, Lock, Bot, Coins } from "lucide-react";
+import { Menu, X, Lock, ChartLine, Users } from "lucide-react";
 import LoginForm from "@/components/form/Login";
 import PhantomConnect from "@/components/phantom/Connect";
 import { usePhantomWallet } from "@/hooks/usePhantomWallet";
@@ -46,22 +46,28 @@ export default function Header() {
 
   const navItems = [
     {
-      href: "/investments/artificial-intelligence",
-      label: "Artificial Intelligence",
+      href: "/trading",
+      label: "Trading",
       colors: "hover:text-blue-500",
-      icon: Bot,
+      icon: ChartLine,
     },
-    { 
-      href: "/investments/cryptocurrencies", 
-      label: "Cryptocurrency", 
-      colors: "hover:text-orange-500",
-      icon: Coins,
+    {
+      href: "/dao",
+      label: "DAO",
+      colors: "hover:text-blue-500",
+      icon: Users,
     },
+    // {
+    //   href: "/investments/artificial-intelligence",
+    //   label: "Artificial Intelligence",
+    //   colors: "hover:text-blue-500",
+    //   icon: Bot,
+    // },
     // { 
-    //   href: "/investments/gold", 
-    //   label: "Gold", 
-    //   colors: "hover:text-yellow-500",
-    //   icon: Gem,
+    //   href: "/investments/cryptocurrencies", 
+    //   label: "Cryptocurrency", 
+    //   colors: "hover:text-orange-500",
+    //   icon: Coins,
     // },
   ];
 

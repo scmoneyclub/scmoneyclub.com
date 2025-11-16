@@ -2,12 +2,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { Sailboat } from "lucide-react";
+import { ArrowUpRight, Sailboat } from "lucide-react";
+import { formatContractAddress } from "@/utils/formats";
 
 export default function DAOProfile() {
 
   return (
-    <Card className="bg-black">
+    <Card className="bg-black border-gray-800">
       <CardContent>
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-white text-lg m-0">DAO Wallet</h1>
@@ -24,7 +25,9 @@ export default function DAOProfile() {
             </Button>
           </div>
         </div>
-        <p className="text-xs text-gray-400 m-0 mb-2">Address: <span className="text-white font-mono break-all">0x04de341da572ef3fed9919fbc7a368d5b577164c</span></p>
+        <p className="text-xs text-gray-400 m-0 mb-2">
+          Ethereum Address: <Link href="https://etherscan.io/address/0x04de341da572ef3fed9919fbc7a368d5b577164c" target="_blank" className="underline flex gap-2"><span className="text-white font-mono break-all">{formatContractAddress("0x04de341da572ef3fed9919fbc7a368d5b577164c")}</span><ArrowUpRight className="w-4 h-4" /></Link>
+        </p>
       </CardContent>
     </Card>
   )

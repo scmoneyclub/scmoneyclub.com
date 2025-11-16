@@ -83,7 +83,7 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
 
   if (loading) {
     return (
-      <Card className="bg-black">
+      <Card className="bg-black border-gray-800">
         <CardContent>
           <Spinner />
         </CardContent>
@@ -92,7 +92,7 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
   }
 
   return (
-    <Card className="bg-black">
+    <Card className="bg-black border-gray-800">
       <CardContent>
         {error && <p className="text-xs text-red-400 m-0">{error}</p>}
         {!error && (
