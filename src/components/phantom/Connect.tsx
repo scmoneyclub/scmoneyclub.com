@@ -180,25 +180,22 @@ export default function PhantomConnect({
               )}
             </div>
             <DialogFooter>
-              <Button className="bg-purple-600 hover:bg-purple-700 w-full" asChild>
+              <Button className="bg-purple-600 hover:bg-purple-700 flex-1" asChild>
                 <Link href="/wallet"><Ghost className="mr-2 h-4 w-4" />View Wallet</Link>
-              </Button>
-              {/* <Button
-                variant="outline"
-                onClick={() => setShowDialog(false)}
-                className="bg-transparent border-gray-600 hover:bg-gray-800"
-              >
-                Close
               </Button>
               <Button
                 variant="outline"
-                onClick={handleDisconnect}
+                onClick={() => {
+                  if (confirm("Are you sure you want to disconnect your wallet?")) {
+                    handleDisconnect();
+                  }
+                }}
                 disabled={disconnecting}
                 className="text-destructive"
               >
-                <LogOut className="mr-2 h-4 w-4" />
                 {disconnecting ? "Disconnecting..." : "Disconnect"}
-              </Button> */}
+                <LogOut className="h-4 w-4" />
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
