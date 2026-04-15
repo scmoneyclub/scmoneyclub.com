@@ -15,7 +15,7 @@ export default function LoginPage() {
           <div className="container max-w-2xl mx-auto">
             <LoginForm />
             <div className="text-center mt-6">
-              <p className="text-sm text-gray-300">Don't have an account? <Link href="/join" className="text-white underline">Create Account</Link></p>
+              <p className="text-sm text-gray-300">Don&apos;t have an account? <Link href="/join" className="text-white underline">Create Account</Link></p>
             </div>
           </div>
         </section>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -41,6 +41,11 @@ interface ChartDataPoint {
   low: number;
   open: number;
   close: number;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: ChartDataPoint }>;
 }
 
 type Ticker = 'BTC' | 'ETH' | 'SOL';
@@ -145,21 +150,21 @@ export default function HomeFeaturedCrypto() {
     }).format(value);
   };
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
+  const CustomTooltip = ({ active, payload }: ChartTooltipProps) => {
+    const point = payload?.[0]?.payload;
+    if (active && point) {
       return (
         <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold mb-2">{data.date}</p>
+          <p className="text-sm font-semibold mb-2">{point.date}</p>
           <div className="space-y-1 text-xs">
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Close:</span> {formatPrice(data.close)}
+              <span className="font-medium">Close:</span> {formatPrice(point.close)}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">High:</span> {formatPrice(data.high)}
+              <span className="font-medium">High:</span> {formatPrice(point.high)}
             </p>
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Low:</span> {formatPrice(data.low)}
+              <span className="font-medium">Low:</span> {formatPrice(point.low)}
             </p>
           </div>
         </div>

@@ -11,9 +11,9 @@ export default function PrivacyContent() {
         <div className="space-y-3">
           <h2 className="text-xl font-semibold text-white">Introduction</h2>
           <p>
-            SC Money Club ("we", "us", "our") is committed to protecting your privacy. This
+            SC Money Club (we, us, our) is committed to protecting your privacy. This
             Privacy Policy explains the types of information we collect when you use our
-            applications and services (the "Services"), including our website and any integrated
+            applications and services (the Services), including our website and any integrated
             applications, and how we use, share, and protect that information.
           </p>
         </div>
@@ -133,7 +133,7 @@ export default function PrivacyContent() {
           <h2 className="text-xl font-semibold text-white">Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy from time to time. We will post the updated version on
-            this page and adjust the "Last updated" date. If changes are material, we may provide
+            this page and adjust the Last updated date. If changes are material, we may provide
             additional notice as required by law.
           </p>
         </div>

@@ -171,11 +171,12 @@ export const InlineCitationCarouselIndex = ({
       return;
     }
 
-    syncState();
+    const frame = requestAnimationFrame(syncState);
 
     api.on("select", syncState);
 
     return () => {
+      cancelAnimationFrame(frame);
       api.off("select", syncState);
     };
   }, [api, syncState]);

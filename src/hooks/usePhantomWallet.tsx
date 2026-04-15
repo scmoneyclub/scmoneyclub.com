@@ -9,8 +9,8 @@ interface PhantomProvider {
   isConnected: boolean;
   connect: (opts?: { onlyIfTrusted?: boolean }) => Promise<{ publicKey: PublicKey }>;
   disconnect: () => Promise<void>;
-  on: (event: string, handler: (args: any) => void) => void;
-  removeListener: (event: string, handler: (args: any) => void) => void;
+  on: (event: string, handler: (...args: unknown[]) => void) => void;
+  removeListener: (event: string, handler: (...args: unknown[]) => void) => void;
 }
 
 declare global {
@@ -74,7 +74,8 @@ export function usePhantomWallet(
   useEffect(() => {
     const provider = window.solana;
     if (!provider || !provider.isPhantom) return;
-    const handleAccountChange = (newPublicKey: PublicKey | null) => {
+    const handleAccountChange = (...args: unknown[]) => {
+      const newPublicKey = (args[0] as PublicKey | null | undefined) ?? null;
       if (newPublicKey) {
         setPublicKey(newPublicKey);
         setConnected(true);
@@ -83,7 +84,7 @@ export function usePhantomWallet(
         setConnected(false);
       }
     };
-    const handleDisconnect = () => {
+    const handleDisconnect = (..._args: unknown[]) => {
       setPublicKey(null);
       setConnected(false);
     };
@@ -169,4 +170,3 @@ export function usePhantomWalletWithConnection(
     connection,
   };
 }
-
