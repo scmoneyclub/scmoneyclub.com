@@ -164,7 +164,7 @@ Edge middleware runs before any page renders, at ~0ms overhead globally. This is
 
 ---
 
-### 1.4 — Unified `<TokenList>` Component + React Query Data Layer
+### 1.4 ✅ — Unified `<TokenList>` Component + React Query Data Layer
 **Priority:** High
 
 **Description:**  
@@ -207,7 +207,7 @@ React Query's `refetchInterval` gives the token list a heartbeat — prices refr
 
 ---
 
-### 2.1 — Skeleton Loader Screens (Bye, Spinners)
+### 2.1 ✅ — Skeleton Loader Screens (Bye, Spinners)
 **Priority:** High
 
 **Description:**  
