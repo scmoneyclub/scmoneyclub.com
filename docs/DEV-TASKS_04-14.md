@@ -304,7 +304,7 @@ Add route segment config to enable partial prerendering on token detail pages, a
 
 ---
 
-### 2.5 — Retry UI for Failed Data Fetches
+### 2.5 ✅ — Retry UI for Failed Data Fetches
 **Priority:** Medium
 
 **Description:**  

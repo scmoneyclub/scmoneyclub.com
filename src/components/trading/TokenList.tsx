@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -147,7 +148,7 @@ export default function TokenList({ chain, limit = 50 }: TokenListProps) {
   const [sortKey, setSortKey] = useState<SortKey>("mc");
   const config = CHAIN_CONFIG[chain];
 
-  const { data: tokens = [], isLoading, error } = useQuery({
+  const { data: tokens = [], isLoading, error, isRefetching, refetch } = useQuery({
     queryKey: ["tokens", chain, limit],
     queryFn: () => fetchTokens(chain, limit),
   });
@@ -203,7 +204,20 @@ export default function TokenList({ chain, limit = 50 }: TokenListProps) {
           </div>
         </div>
         {isLoading && <TokenListSkeleton />}
-        {error && !isLoading && <p className="text-sm text-red-400">{error.message}</p>}
+        {error && !isLoading && (
+          <div className="flex flex-col items-center gap-3 rounded-md border border-red-500/20 bg-red-500/5 py-12 text-center">
+            <p className="text-sm text-red-400">{error.message}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isRefetching}
+              className="border-gray-700 bg-black text-gray-200 hover:bg-gray-900 hover:text-white"
+            >
+              {isRefetching ? "Retrying..." : "Try again"}
+            </Button>
+          </div>
+        )}
         {!isLoading && !error && (
           <div className="overflow-x-auto rounded-md border border-gray-800">
             <table className="w-full text-left text-sm">
