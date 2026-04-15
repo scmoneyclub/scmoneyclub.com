@@ -1,7 +1,7 @@
 'use client';
 import { formatContractAddress, formatUsd } from '@/utils/formats';
 import { Copy, Check } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAnkrTokenPrice } from '@/hooks/useAnkrTokenPrice';
 
@@ -9,13 +9,6 @@ interface AnkrPriceResult {
   usdPrice: string;
   blockchain: string;
   contractAddress: string;
-}
-
-interface AnkrRpcResponse {
-  jsonrpc: string;
-  id: number;
-  result?: AnkrPriceResult;
-  error?: { code: number; message: string };
 }
 
 interface TokenAnkrPriceProps {
@@ -32,18 +25,13 @@ export default function TokenAnkrPrice({
   autoRefreshMs,
   className,
 }: TokenAnkrPriceProps) {
-  const [price, setPrice] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const { price: hookPrice, loading, error, refresh } = useAnkrTokenPrice({
+  const { price: hookPrice, loading, error } = useAnkrTokenPrice({
     blockchain,
     contractAddress,
     autoRefreshMs,
   });
-
-  useEffect(() => {
-    setPrice(hookPrice ?? null);
-  }, [hookPrice]);
 
   const onCopy = async () => {
     try {
@@ -74,10 +62,9 @@ export default function TokenAnkrPrice({
         </div>
         {error && <p className="text-xs text-red-400 m-0">{error}</p>}
         {!error && (
-          <p className="text-2xl text-white m-0">{price ? formatUsd(Number(price), 2) : '—'}</p>
+          <p className="text-2xl text-white m-0">{hookPrice ? formatUsd(Number(hookPrice), 2) : '—'}</p>
         )}
       </div>
     </section>
   );
 }
-

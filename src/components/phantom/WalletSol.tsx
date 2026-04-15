@@ -34,6 +34,10 @@ interface PhantomWalletAssetsProps {
   solana_address?: string | PublicKey;
 }
 
+type ConnectionWithRpcEndpoint = {
+  _rpcEndpoint?: string;
+};
+
 export default function PhantomWalletSol({ solana_address }: PhantomWalletAssetsProps = {}) {
   // Using Ankr's public RPC which has better rate limits
   // You can also pass a custom RPC endpoint if needed
@@ -77,7 +81,9 @@ export default function PhantomWalletSol({ solana_address }: PhantomWalletAssets
   // Log connection info for debugging
   useEffect(() => {
     if (connection) {
-      console.log("Connection RPC endpoint:", (connection as any)._rpcEndpoint || "unknown");
+      const rpcEndpoint =
+        (connection as ConnectionWithRpcEndpoint)._rpcEndpoint ?? "unknown";
+      console.log("Connection RPC endpoint:", rpcEndpoint);
     }
   }, [connection]);
 
@@ -411,7 +417,7 @@ export default function PhantomWalletSol({ solana_address }: PhantomWalletAssets
             <Coins className="h-12 w-12 text-gray-600 mx-auto mb-4" />
             <p className="text-gray-400 text-lg mb-2">No assets found</p>
             <p className="text-gray-500 text-sm">
-              Your wallet doesn't have any SOL or SPL tokens.
+            Your wallet doesn&apos;t have any SOL or SPL tokens.
             </p>
           </div>
         )}

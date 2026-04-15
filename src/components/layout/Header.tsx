@@ -178,7 +178,7 @@ export default function Header() {
           <LoginForm />
           <PhantomConnect />
           <div className="text-center">
-            <p className="text-sm text-gray-300 m-0">Don't have an account? <Link href="/join" className="text-white underline">Create Account</Link></p>
+            <p className="text-sm text-gray-300 m-0">Don&apos;t have an account? <Link href="/join" className="text-white underline">Create Account</Link></p>
           </div>
         </DialogContent>
       </Dialog>

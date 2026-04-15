@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import axios from "axios";
+import Image from "next/image";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import Link from "next/link";
 
@@ -60,8 +61,10 @@ export default function TradingSearchDialog({ open, onOpenChange }: TradingSearc
       setResults(items);
       // optional debug
       // console.log("Jupiter search results", items);
-    } catch (e: any) {
-      const msg = (e?.response?.data as { message?: string } | undefined)?.message || "Search failed";
+    } catch (error: unknown) {
+      const msg = axios.isAxiosError(error)
+        ? (error.response?.data as { message?: string } | undefined)?.message || "Search failed"
+        : "Search failed";
       setError(msg);
       setResults([]);
     } finally {
@@ -112,9 +115,15 @@ export default function TradingSearchDialog({ open, onOpenChange }: TradingSearc
                   className="flex items-center gap-3 py-2 hover:bg-gray-800/40 rounded px-2"
                   onClick={() => onOpenChange(false)}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {item.icon ? (
-                    <img src={item.icon} alt={item.symbol} className="h-6 w-6 rounded-full" />
+                    <Image
+                      src={item.icon}
+                      alt={item.symbol}
+                      width={24}
+                      height={24}
+                      className="h-6 w-6 rounded-full"
+                      unoptimized
+                    />
                   ) : (
                     <div className="h-6 w-6 rounded-full bg-gray-700" />
                   )}
@@ -132,7 +141,7 @@ export default function TradingSearchDialog({ open, onOpenChange }: TradingSearc
             </div>
           )}
           {!loading && !error && results.length === 0 && query && (
-            <p className="m-0 text-sm text-gray-400">No results for "{query}"</p>
+            <p className="m-0 text-sm text-gray-400">No results for &quot;{query}&quot;</p>
           )}
           {!loading && !error && !query && (
             <p className="m-0 text-sm text-gray-400">Start typing to search</p>

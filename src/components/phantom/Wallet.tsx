@@ -280,7 +280,7 @@ export default function PhantomWalletAssets() {
           <Coins className="h-12 w-12 text-gray-600 mx-auto mb-4" />
           <p className="text-gray-400 text-lg mb-2">No assets found</p>
           <p className="text-gray-500 text-sm">
-            Your wallet doesn't have any SOL or SPL tokens.
+            Your wallet doesn&apos;t have any SOL or SPL tokens.
           </p>
         </div>
       )}
