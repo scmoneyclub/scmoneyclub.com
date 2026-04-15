@@ -1,7 +1,6 @@
 "use client";
 
-import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { formatUsd } from "@/utils/formats";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,18 +32,16 @@ interface AnkrAccountBalanceResponse {
   };
 }
 
+// Proxy route keeps the Ankr API key server-side
+const ANKR_PROXY = "/api/ankr";
+
 export default function DAOWallet({ ethereum_address }: { ethereum_address: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [assets, setAssets] = useState<AnkrAsset[]>([]);
   const [totalUsd, setTotalUsd] = useState<string | null>(null);
 
-  const endpoint = useMemo(() => {
-    const key = process.env.NEXT_PUBLIC_ANKR_API_KEY || "";
-    return `https://rpc.ankr.com/multichain/${encodeURIComponent(key)}`;
-  }, []);
-
-  const fetchWalletBalance = async () => {
+  const fetchWalletBalance = useCallback(async () => {
     if (!ethereum_address) return;
     setLoading(true);
     setError(null);
@@ -58,28 +55,30 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
         },
         id: 1,
       };
-      const res = await axios.post<AnkrAccountBalanceResponse>(endpoint, body, {
+      const res = await fetch(ANKR_PROXY, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
-      if (res.data.error) {
-        throw new Error(res.data.error.message || "RPC Error");
+      const data: AnkrAccountBalanceResponse = await res.json();
+      if (data.error) {
+        throw new Error(data.error.message || "RPC Error");
       }
-      const result = res.data.result;
-      setAssets(result?.assets ?? []);
-      setTotalUsd(result?.totalBalanceUsd ?? null);
-    } catch (e: any) {
-      setError(e?.message || "Failed to load wallet data");
+      setAssets(data.result?.assets ?? []);
+      setTotalUsd(data.result?.totalBalanceUsd ?? null);
+    } catch (e: unknown) {
+      const err = e as { message?: string };
+      setError(err?.message || "Failed to load wallet data");
       setAssets([]);
       setTotalUsd(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [ethereum_address]);
 
   useEffect(() => {
     fetchWalletBalance();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ethereum_address]);
+  }, [fetchWalletBalance]);
 
   if (loading) {
     return (
@@ -115,10 +114,12 @@ export default function DAOWallet({ ethereum_address }: { ethereum_address: stri
                   {assets.map((a) => (
                     <tr key={`${a.contractAddress}-${a.tokenSymbol}`} className="border-t border-gray-800 text-gray-300">
                       <td className="px-3 py-2">
-                        <Link href="https://etherscan.io/" target="_blank">{a.tokenName}</Link>
+                        <Link href="https://etherscan.io/" target="_blank" rel="noopener noreferrer">
+                          {a.tokenName}
+                        </Link>
                       </td>
                       <td className="px-3 py-2">
-                      <Link href={`/tokens/${a.tokenSymbol}`}>{a.tokenSymbol}</Link>
+                        <Link href={`/tokens/${a.tokenSymbol}`}>{a.tokenSymbol}</Link>
                       </td>
                       <td className="px-3 py-2">{a.balance}</td>
                       <td className="px-3 py-2">

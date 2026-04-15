@@ -32,15 +32,12 @@ interface UsePhantomWalletReturn {
   isPhantomInstalled: boolean;
 }
 
-// Default Solana RPC endpoint (can be customized)
-// Using Ankr's public RPC which has better rate limits than the official endpoint
-// For mainnet, use: "https://rpc.ankr.com/solana"
-// For devnet, use: "https://rpc.ankr.com/solana_devnet"
-// If you have an Ankr API key, you can use: `https://rpc.ankr.com/solana/${process.env.NEXT_PUBLIC_ANKR_API_KEY}`
-const DEFAULT_RPC_ENDPOINT = process.env.NEXT_PUBLIC_ANKR_SOLANA_RPC || 
-  (process.env.NEXT_PUBLIC_ANKR_API_KEY 
-    ? `https://rpc.ankr.com/solana/${process.env.NEXT_PUBLIC_ANKR_API_KEY}`
-    : "https://rpc.ankr.com/solana");
+// Default Solana RPC endpoint.
+// NEXT_PUBLIC_SOLANA_RPC_URL is optional — set it in .env.local to point to a
+// custom/private RPC. Falls back to Ankr's free public Solana mainnet endpoint.
+// NEVER embed a private API key in a NEXT_PUBLIC_ variable.
+const DEFAULT_RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://rpc.ankr.com/solana";
 
 export function usePhantomWallet(
   rpcEndpoint: string = DEFAULT_RPC_ENDPOINT

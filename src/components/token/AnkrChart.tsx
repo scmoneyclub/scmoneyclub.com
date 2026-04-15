@@ -1,5 +1,4 @@
 'use client';
-import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
@@ -28,6 +27,9 @@ interface AnkrPriceHistoryResponse {
   error?: { code: number; message: string };
 }
 
+// Proxy route keeps the Ankr API key server-side
+const ANKR_PROXY = '/api/ankr';
+
 export default function TokenAnkrChart({
   blockchain,
   contractAddress,
@@ -39,11 +41,6 @@ export default function TokenAnkrChart({
   const [error, setError] = useState<string | null>(null);
   const [quotes, setQuotes] = useState<AnkrPriceHistoryQuote[]>([]);
 
-  const endpoint = useMemo(() => {
-    const key = process.env.NEXT_PUBLIC_ANKR_API_KEY || '';
-    return `https://rpc.ankr.com/multichain/${encodeURIComponent(key)}`;
-  }, []);
-
   useEffect(() => {
     if (externalQuotes && externalQuotes.length) {
       setQuotes(externalQuotes);
@@ -51,33 +48,42 @@ export default function TokenAnkrChart({
       setLoading(false);
       return;
     }
+    const controller = new AbortController();
     const fetchHistory = async () => {
       if (!blockchain || !contractAddress) return;
       setLoading(true);
       setError(null);
       try {
-        const body: any = {
+        const params: Record<string, unknown> = { blockchain, contractAddress };
+        if (timeRange) params.timeRange = timeRange;
+        if (interval) params.interval = interval;
+        const body = {
           jsonrpc: '2.0',
           method: 'ankr_getTokenPriceHistory',
-          params: { blockchain, contractAddress },
+          params,
           id: 1,
         };
-        if (timeRange) body.params.timeRange = timeRange;
-        if (interval) body.params.interval = interval;
-        const res = await axios.post<AnkrPriceHistoryResponse>(endpoint, body, {
+        const res = await fetch(ANKR_PROXY, {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: controller.signal,
         });
-        if (res.data.error) throw new Error(res.data.error.message || 'RPC Error');
-        setQuotes(res.data.result?.quotes ?? []);
-      } catch (e: any) {
-        setError(e?.message || 'Failed to load Ankr price history');
+        const data: AnkrPriceHistoryResponse = await res.json();
+        if (data.error) throw new Error(data.error.message || 'RPC Error');
+        setQuotes(data.result?.quotes ?? []);
+      } catch (e: unknown) {
+        const err = e as { name?: string; message?: string };
+        if (err?.name === 'AbortError') return;
+        setError(err?.message || 'Failed to load Ankr price history');
         setQuotes([]);
       } finally {
         setLoading(false);
       }
     };
     fetchHistory();
-  }, [endpoint, blockchain, contractAddress, timeRange, interval, externalQuotes]);
+    return () => controller.abort();
+  }, [blockchain, contractAddress, timeRange, interval, externalQuotes]);
 
   const chartData = useMemo(() => {
     return (externalQuotes?.length ? externalQuotes : quotes).map((q) => {
@@ -93,7 +99,7 @@ export default function TokenAnkrChart({
   const formatPrice = (value: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { date: string; price: number } }> }) => {
     if (active && payload && payload.length) {
       const d = payload[0].payload;
       return (
@@ -115,12 +121,12 @@ export default function TokenAnkrChart({
       <div className="p-4">
         <div className="w-full space-y-4">
           {loading && (
-            <div className=" w-full h-[400px] flex items-center justify-center ">
+            <div className="w-full h-[400px] flex items-center justify-center">
               <div className="text-gray-500">Loading price history…</div>
             </div>
           )}
           {error && !loading && (
-            <div className="w-full h-[400px] flex items-center jutify-center">
+            <div className="w-full h-[400px] flex items-center justify-center">
               <div className="text-red-400 text-sm">{error}</div>
             </div>
           )}

@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface AnkrPriceResult {
@@ -17,28 +16,32 @@ export interface AnkrRpcResponse<T> {
 
 export type SupportedBlockchain = "eth" | "bsc" | "polygon" | "avax" | "fantom" | string;
 
+// All Ankr calls are routed through /api/ankr to keep the API key server-side.
+const ANKR_PROXY = "/api/ankr";
+
 export async function getAnkrTokenPrice(params: {
   blockchain: SupportedBlockchain;
   contractAddress: string;
   signal?: AbortSignal;
 }): Promise<AnkrPriceResult | null> {
   const { blockchain, contractAddress, signal } = params;
-  const key = process.env.NEXT_PUBLIC_ANKR_API_KEY || "";
-  const endpoint = `https://rpc.ankr.com/multichain/${encodeURIComponent(key)}`;
   const body = {
     jsonrpc: "2.0",
     method: "ankr_getTokenPrice",
     params: { blockchain, contractAddress },
     id: 1,
   };
-  const res = await axios.post<AnkrRpcResponse<AnkrPriceResult>>(endpoint, body, {
+  const res = await fetch(ANKR_PROXY, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
     signal,
   });
-  if (res.data.error) {
-    throw new Error(res.data.error.message || "RPC Error");
+  const data: AnkrRpcResponse<AnkrPriceResult> = await res.json();
+  if (data.error) {
+    throw new Error(data.error.message || "RPC Error");
   }
-  return res.data.result ?? null;
+  return data.result ?? null;
 }
 
 export function useAnkrTokenPrice(options: {
@@ -48,8 +51,8 @@ export function useAnkrTokenPrice(options: {
 }) {
   const { blockchain, contractAddress, autoRefreshMs } = options;
   const [price, setPrice] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false); // initial load
-  const [refreshing, setRefreshing] = useState(false); // stale-while-refresh flag
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const didLoadOnceRef = useRef(false);
@@ -59,7 +62,6 @@ export function useAnkrTokenPrice(options: {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
-    // SWR behavior: if we already have data, mark as refreshing; otherwise it's the initial loading
     if (didLoadOnceRef.current) {
       setRefreshing(true);
     } else {
@@ -70,10 +72,10 @@ export function useAnkrTokenPrice(options: {
       const result = await getAnkrTokenPrice({ blockchain, contractAddress, signal: controller.signal });
       setPrice(result?.usdPrice ?? null);
       didLoadOnceRef.current = true;
-    } catch (e: any) {
-      if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
-      // On error during refresh, keep stale data; only clear if we never had data
-      setError(e?.message || "Failed to load Ankr price");
+    } catch (e: unknown) {
+      const err = e as { name?: string; code?: string; message?: string };
+      if (err?.name === "AbortError" || err?.code === "ERR_CANCELED") return;
+      setError(err?.message || "Failed to load Ankr price");
       if (!didLoadOnceRef.current) {
         setPrice(null);
       }
@@ -96,5 +98,5 @@ export function useAnkrTokenPrice(options: {
   return { price, loading, refreshing, error, refresh: load };
 }
 
-// Backwards-compatible alias with a cleaner name for consumers that prefer generic naming
+// Backwards-compatible alias
 export const useTokenPrice = useAnkrTokenPrice;

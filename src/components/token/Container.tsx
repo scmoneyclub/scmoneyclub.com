@@ -1,18 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import TokenAnkrPrice from "@/components/token/AnkrPrice";
 import TokenAnkrChart, { AnkrPriceHistoryQuote } from "@/components/token/AnkrChart";
 import TokenTimeAgoChange from "@/components/token/TimeAgoChange";
-
-interface TokenContainerProps {
-  blockchain: string;
-  contract: string;
-  timeRange?: string;
-  interval?: string;
-}
 
 interface AnkrPriceHistoryResponse {
   jsonrpc: string;
@@ -23,47 +15,52 @@ interface AnkrPriceHistoryResponse {
   error?: { code: number; message: string };
 }
 
-export default function TradingListingContainer({ blockchain, contract, time }: any) {
-  // Backward compatibility with existing props
-  const chain = (blockchain as string) || 'eth';
-  const contractAddress = (contract as string) || '';
+interface TokenContainerProps {
+  blockchain: string;
+  contract: string;
+}
+
+// Proxy route keeps the Ankr API key server-side
+const ANKR_PROXY = '/api/ankr';
+
+export default function TradingListingContainer({ blockchain, contract }: TokenContainerProps) {
+  const chain = blockchain || 'eth';
+  const contractAddress = contract || '';
 
   const [quotes, setQuotes] = useState<AnkrPriceHistoryQuote[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const endpoint = useMemo(() => {
-    const key = process.env.NEXT_PUBLIC_ANKR_API_KEY || '';
-    return `https://rpc.ankr.com/multichain/${encodeURIComponent(key)}`;
-  }, []);
 
   useEffect(() => {
-    let active = true;
+    const controller = new AbortController();
     const fetchHistory = async () => {
       if (!chain || !contractAddress) return;
       try {
-        const body: any = {
+        const body = {
           jsonrpc: '2.0',
           method: 'ankr_getTokenPriceHistory',
           params: { blockchain: chain, contractAddress },
           id: 1,
         };
-        const res = await axios.post<AnkrPriceHistoryResponse>(endpoint, body, {
+        const res = await fetch(ANKR_PROXY, {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: controller.signal,
         });
-        if (res.data.error) throw new Error(res.data.error.message || 'RPC Error');
-        if (active) {
-          setQuotes(res.data.result?.quotes ?? []);
-          setError(null);
-        }
-      } catch (e: any) {
-        if (active) {
-          setError(e?.message || 'Failed to load history');
-          setQuotes([]);
-        }
+        const data: AnkrPriceHistoryResponse = await res.json();
+        if (data.error) throw new Error(data.error.message || 'RPC Error');
+        setQuotes(data.result?.quotes ?? []);
+        setError(null);
+      } catch (e: unknown) {
+        const err = e as { name?: string; message?: string };
+        if (err?.name === 'AbortError') return;
+        setError(err?.message || 'Failed to load history');
+        setQuotes([]);
       }
     };
     fetchHistory();
-    return () => { active = false; };
-  }, [endpoint, chain, contractAddress]);
+    return () => controller.abort();
+  }, [chain, contractAddress]);
 
   return (
     <ScrollArea className="max-h-[calc(100vh-40px)] overflow-y-auto">

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { formatUsd, formatTime } from "@/utils/formats";
 import Link from "next/link";
+import Image from "next/image";
 
 interface TokenItem {
   address: string;
@@ -18,7 +18,7 @@ interface TokenItem {
   logoURI?: string | null;
   v24hUSD?: number | null;
   v24hChangePercent?: number | null;
-  mc?: number | null; // market cap
+  mc?: number | null;
   lastTradeUnixTime?: number | null;
 }
 
@@ -27,46 +27,21 @@ interface BirdeyeResponse {
   message?: string;
   data?: {
     total?: number;
-    items?: Array<{
-      address: string;
-      symbol: string;
-      name: string;
-      decimals?: number;
-      price?: number;
-      liquidity?: number;
-      logoURI?: string | null;
-      v24hUSD?: number | null;
-      v24hChangePercent?: number | null;
-      mc?: number | null;
-      lastTradeUnixTime?: number | null;
-    }>;
-    tokens?: Array<{
-      address: string;
-      symbol: string;
-      name: string;
-      decimals?: number;
-      price?: number;
-      liquidity?: number;
-      logoURI?: string | null;
-      v24hUSD?: number | null;
-      v24hChangePercent?: number | null;
-      mc?: number | null;
-      lastTradeUnixTime?: number | null;
-    }>;
+    items?: Array<TokenItem>;
+    tokens?: Array<TokenItem>;
   };
 }
 
 interface TradingEthereumTokenListProps {
-  apiUrl?: string;
   limit?: number;
 }
 
-const DEFAULT_API =
-  "https://public-api.birdeye.so/defi/tokenlist?sort_by=v24hUSD&sort_type=desc&offset=0&limit=50&min_liquidity=100&ui_amount_mode=scaled";
+// Proxy route — API key stays server-side
+const PROXY_URL = "/api/birdeye/tokenlist?chain=ethereum&sort_by=v24hUSD&sort_type=desc&offset=0&min_liquidity=100";
 
 type SortKey = "mc" | "v24hUSD" | "v24hChangePercent" | "liquidity";
 
-export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }: TradingEthereumTokenListProps) {
+export default function EthereumTokenList({ limit = 50 }: TradingEthereumTokenListProps) {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,66 +61,49 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
     list.sort((a, b) => {
       const av = (a[sortKey] as number | null | undefined) ?? -Infinity;
       const bv = (b[sortKey] as number | null | undefined) ?? -Infinity;
-      // Descending
       return (bv as number) - (av as number);
     });
     return list;
   }, [filtered, sortKey]);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get<BirdeyeResponse>(apiUrl, {
-          headers: {
-            accept: "application/json",
-            "x-chain": "ethereum",
-            "x-api-key": process.env.NEXT_PUBLIC_BIRDEYE_API_KEY,
-          },
-          params: {
-            limit,
-          },
-        });
-        if (res.data && res.data.success === false) {
-          if (isMounted) setError(res.data.message || "Request failed");
+        const res = await fetch(`${PROXY_URL}&limit=${limit}`, { signal: controller.signal });
+        const data: BirdeyeResponse = await res.json();
+        if (data.success === false) {
+          setError(data.message || "Request failed");
           return;
         }
-        const items = res.data?.data?.items ?? res.data?.data?.tokens ?? [];
-        if (isMounted) {
-          setTokens(
-            items.map((i) => ({
-              address: i.address,
-              symbol: i.symbol,
-              name: i.name,
-              decimals: i.decimals,
-              price: i.price,
-              liquidity: i.liquidity,
-              logoURI: i.logoURI ?? null,
-              v24hUSD: i.v24hUSD ?? null,
-              v24hChangePercent: i.v24hChangePercent ?? null,
-              mc: i.mc ?? null,
-              lastTradeUnixTime: i.lastTradeUnixTime ?? null,
-            }))
-          );
-        }
-      } catch (e: any) {
-        if (!isMounted) return;
-        if (axios.isAxiosError(e)) {
-          const msg = (e.response?.data as BirdeyeResponse | undefined)?.message;
-          setError(msg || "Failed to load tokens");
-        } else {
-          setError("Failed to load tokens");
-        }
+        const items = data?.data?.items ?? data?.data?.tokens ?? [];
+        setTokens(
+          items.map((i) => ({
+            address: i.address,
+            symbol: i.symbol,
+            name: i.name,
+            decimals: i.decimals,
+            price: i.price,
+            liquidity: i.liquidity,
+            logoURI: i.logoURI ?? null,
+            v24hUSD: i.v24hUSD ?? null,
+            v24hChangePercent: i.v24hChangePercent ?? null,
+            mc: i.mc ?? null,
+            lastTradeUnixTime: i.lastTradeUnixTime ?? null,
+          }))
+        );
+      } catch (e: unknown) {
+        const err = e as { name?: string; message?: string };
+        if (err?.name === "AbortError") return;
+        setError(err?.message || "Failed to load tokens");
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     })();
-    return () => {
-      isMounted = false;
-    };
-  }, [apiUrl, limit]);
+    return () => controller.abort();
+  }, [limit]);
 
   return (
     <section>
@@ -158,10 +116,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <Select
-              value={sortKey}
-              onValueChange={(value) => setSortKey(value as SortKey)}
-            >
+            <Select value={sortKey} onValueChange={(value) => setSortKey(value as SortKey)}>
               <SelectTrigger className="h-9 rounded-md border border-gray-800 bg-black px-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-700">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -180,9 +135,7 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
             <span>Loading tokens…</span>
           </div>
         )}
-        {error && !loading && (
-          <p className="text-red-400 text-sm">{error}</p>
-        )}
+        {error && !loading && <p className="text-red-400 text-sm">{error}</p>}
         {!loading && !error && (
           <div className="overflow-x-auto rounded-md border border-gray-800">
             <table className="w-full text-left text-sm">
@@ -195,19 +148,24 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                   <th className="px-3 py-2">Liquidity</th>
                   <th className="px-3 py-2">Market Cap</th>
                   <th className="px-3 py-2">Last Trade</th>
-                  {/* <th className="px-3 py-2">Address</th> */}
                 </tr>
               </thead>
               <tbody>
                 {sorted.map((t) => {
                   const up = typeof t.v24hChangePercent === "number" && t.v24hChangePercent >= 0;
                   return (
-                    <tr key={t.address} className="border-t border-gray-800 text_gray-300">
+                    <tr key={t.address} className="border-t border-gray-800 text-gray-300">
                       <td className="px-3 py-2">
                         <Link href={`/ethereum/${t.address}`} className="flex items-center gap-2">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           {t.logoURI ? (
-                            <img src={t.logoURI} alt={t.symbol} className="h-6 w-6 rounded-full" />
+                            <Image
+                              src={t.logoURI}
+                              alt={t.symbol}
+                              width={24}
+                              height={24}
+                              className="rounded-full"
+                              unoptimized
+                            />
                           ) : (
                             <div className="h-6 w-6 rounded-full bg-gray-800" />
                           )}
@@ -218,18 +176,19 @@ export default function EthereumTokenList({ apiUrl = DEFAULT_API, limit = 100 }:
                         </Link>
                       </td>
                       <td className="px-3 py-2">{formatUsd(t.price, 6)}</td>
-                      <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>{typeof t.liquidity === 'number' && t.v24hChangePercent !== null && t.v24hChangePercent !== undefined ? `${t.v24hChangePercent.toFixed(2)}%` : '—'}</td>
+                      <td className={`px-3 py-2 ${up ? "text-emerald-400" : "text-red-400"}`}>
+                        {typeof t.v24hChangePercent === "number" ? `${t.v24hChangePercent.toFixed(2)}%` : "—"}
+                      </td>
                       <td className="px-3 py-2">{formatUsd(t.v24hUSD, 0)}</td>
                       <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toLocaleString() : "—"}</td>
                       <td className="px-3 py-2">{formatUsd(t.mc, 0)}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{formatTime(t.lastTradeUnixTime)}</td>
-                      {/* <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td> */}
                     </tr>
                   );
                 })}
                 {sorted.length === 0 && (
                   <tr>
-                    <td className="px-3 py-6 text-center text-gray-400" colSpan={8}>
+                    <td className="px-3 py-6 text-center text-gray-400" colSpan={7}>
                       No tokens found
                     </td>
                   </tr>

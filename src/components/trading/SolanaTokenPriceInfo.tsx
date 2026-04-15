@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Loader2, ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 interface PriceResponse {
@@ -9,75 +8,62 @@ interface PriceResponse {
   message?: string;
   data?: {
     isScaledUiToken: boolean;
-    value: number; // price in USD (assumed)
+    value: number;
     updateUnixTime: number;
-    updateHumanTime: string; // ISO
-    priceChange24h?: number; // percent
-    priceInNative?: number; // priced in SOL
+    updateHumanTime: string;
+    priceChange24h?: number;
+    priceInNative?: number;
   };
 }
 
 interface SolanaTokenPriceInfoProps {
   tokenContractAddress: string;
   title?: string;
-  apiUrl?: string; // override full URL
 }
 
-const DEFAULT_ENDPOINT = (address: string) =>
-  `https://public-api.birdeye.so/defi/price?address=${address}&ui_amount_mode=raw`;
+// Proxy route — API key stays server-side
+const buildProxyUrl = (address: string) =>
+  `/api/birdeye/price?address=${encodeURIComponent(address)}&chain=solana`;
 
 export default function SolanaTokenPriceInfo({
   tokenContractAddress,
   title = "Token Price",
-  apiUrl,
 }: SolanaTokenPriceInfoProps) {
   const [data, setData] = useState<PriceResponse["data"] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const endpoint = useMemo(() => apiUrl ?? DEFAULT_ENDPOINT(tokenContractAddress), [apiUrl, tokenContractAddress]);
+  const endpoint = useMemo(() => buildProxyUrl(tokenContractAddress), [tokenContractAddress]);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     (async () => {
       if (!tokenContractAddress) return;
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get<PriceResponse>(endpoint, {
-          headers: {
-            accept: "application/json",
-            "x-chain": "solana",
-            "x-api-key": process.env.NEXT_PUBLIC_BIRDEYE_API_KEY,
-          },
-        });
-        if (!res.data.success) {
-          if (isMounted) setError(res.data.message || "Request failed");
+        const res = await fetch(endpoint, { signal: controller.signal });
+        const json: PriceResponse = await res.json();
+        if (!json.success) {
+          setError(json.message || "Request failed");
           return;
         }
-        if (isMounted) setData(res.data?.data ?? null);
-      } catch (e: any) {
-        if (!isMounted) return;
-        if (axios.isAxiosError(e)) {
-          const msg = (e.response?.data as PriceResponse | undefined)?.message;
-          setError(msg || "Failed to load price");
-        } else {
-          setError("Failed to load price");
-        }
+        setData(json?.data ?? null);
+      } catch (e: unknown) {
+        const err = e as { name?: string; message?: string };
+        if (err?.name === "AbortError") return;
+        setError(err?.message || "Failed to load price");
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     })();
-    return () => {
-      isMounted = false;
-    };
+    return () => controller.abort();
   }, [endpoint, tokenContractAddress]);
 
   const price = data?.value ?? null;
   const priceChange = data?.priceChange24h ?? null;
   const priceInNative = data?.priceInNative ?? null;
   const updatedAt = data?.updateHumanTime ?? (data?.updateUnixTime ? new Date(data.updateUnixTime * 1000).toISOString() : null);
-
   const changePositive = typeof priceChange === "number" && priceChange >= 0;
 
   return (
@@ -91,9 +77,7 @@ export default function SolanaTokenPriceInfo({
         )}
       </div>
 
-      {error && !loading && (
-        <p className="text-xs text-red-400 m-0">{error}</p>
-      )}
+      {error && !loading && <p className="text-xs text-red-400 m-0">{error}</p>}
 
       {!error && (
         <div className="space-y-2">

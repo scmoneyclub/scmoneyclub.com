@@ -1,9 +1,7 @@
-
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -21,7 +19,6 @@ interface LoginResponse {
     registration_status: string;
     company: string;
   };
-  token?: string;
   error?: string;
 }
 
@@ -38,40 +35,26 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_SCMC_API_BASE_URL || "";
-      if (!apiBaseUrl) {
-        throw new Error("API base URL not configured");
-      }
-      const response = await axios.post<LoginResponse>(
-        `${apiBaseUrl}/scmc/v1/login`,
-        {
-          login: email.trim(),
-          password: password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.data.success && response.data.user && response.data.token) {
-        // Store token and user data
+      // Token is set as an httpOnly cookie by the API route — never touches JS
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login: email.trim(), password }),
+      });
+
+      const data: LoginResponse = await response.json();
+
+      if (data.success && data.user) {
+        // Store only non-sensitive user profile data in sessionStorage
         if (typeof window !== "undefined") {
-          localStorage.setItem("scmc_token", response.data.token);
-          localStorage.setItem("scmc_user", JSON.stringify(response.data.user));
+          sessionStorage.setItem("scmc_user", JSON.stringify(data.user));
         }
-        // Redirect to account or dashboard
         router.push("/account");
       } else {
-        setError(response.data.error || "Login failed");
+        setError(data.error || "Login failed");
       }
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
-        const errorData = err.response?.data as LoginResponse | undefined;
-        setError(errorData?.error || err.response?.statusText || "Login failed. Please try again.");
-      } else {
-        setError(err?.message || "An unexpected error occurred");
-      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -105,7 +88,7 @@ export default function LoginForm() {
         />
         <button
           type="button"
-          onClick={() => setShowPassword(prev => !prev)}
+          onClick={() => setShowPassword((prev) => !prev)}
           className="absolute right-3 top-7 text-gray-400 hover:text-gray-200"
           aria-label={showPassword ? "Hide password" : "Show password"}
           disabled={loading}

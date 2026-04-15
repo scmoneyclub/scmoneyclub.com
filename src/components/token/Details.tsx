@@ -1,7 +1,7 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface TokenOverviewResponse {
   success: boolean;
@@ -30,38 +30,33 @@ export default function TokenDetails({ contract }: { contract: string }) {
   const [overview, setOverview] = useState<TokenOverviewResponse["data"] | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     const getTokenDetails = async () => {
       if (!contract) return;
       setLoading(true);
       setError(null);
       try {
-        const url = `https://public-api.birdeye.so/defi/token_overview?address=${encodeURIComponent(
-          contract
-        )}&ui_amount_mode=scaled`;
-        const res = await axios.get<TokenOverviewResponse>(url, {
-          headers: {
-            accept: "application/json",
-            "x-chain": "solana",
-            "x-api-key": process.env.NEXT_PUBLIC_BIRDEYE_API_KEY,
-          },
-        });
-        if (!res.data.success) {
-          if (isMounted) setError(res.data.message || "Failed to load token overview");
+        // Routed through /api/birdeye/token-overview — API key stays server-side
+        const res = await fetch(
+          `/api/birdeye/token-overview?address=${encodeURIComponent(contract)}&chain=solana`,
+          { signal: controller.signal }
+        );
+        const data: TokenOverviewResponse = await res.json();
+        if (!data.success) {
+          setError(data.message || "Failed to load token overview");
           return;
         }
-        if (isMounted) setOverview(res.data.data ?? null);
-      } catch (e: any) {
-        const msg = (e?.response?.data as TokenOverviewResponse | undefined)?.message || "Failed to load token overview";
-        if (isMounted) setError(msg);
+        setOverview(data.data ?? null);
+      } catch (e: unknown) {
+        const err = e as { name?: string; message?: string };
+        if (err?.name === "AbortError") return;
+        setError(err?.message || "Failed to load token overview");
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
     getTokenDetails();
-    return () => {
-      isMounted = false;
-    };
+    return () => controller.abort();
   }, [contract]);
 
   const formatUsd = (n?: number) => (typeof n === "number" ? `$${n.toLocaleString()}` : "—");
@@ -75,9 +70,15 @@ export default function TokenDetails({ contract }: { contract: string }) {
       {!loading && !error && overview && (
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             {overview.logoURI ? (
-              <img src={overview.logoURI} alt={overview.symbol} className="h-10 w-10 rounded" />
+              <Image
+                src={overview.logoURI}
+                alt={overview.symbol ?? "Token"}
+                width={40}
+                height={40}
+                className="rounded"
+                unoptimized
+              />
             ) : (
               <div className="h-10 w-10 rounded bg-gray-800" />
             )}
@@ -116,7 +117,9 @@ export default function TokenDetails({ contract }: { contract: string }) {
               <p className="text-white m-0">{formatUsd(overview.liquidity)}</p>
             </div>
           </div>
-          <div className="text-xs text-gray-500">Updated: {overview.lastTradeHumanTime || (overview.lastTradeUnixTime ? new Date(overview.lastTradeUnixTime * 1000).toLocaleString() : "—")}</div>
+          <div className="text-xs text-gray-500">
+            Updated: {overview.lastTradeHumanTime || (overview.lastTradeUnixTime ? new Date(overview.lastTradeUnixTime * 1000).toLocaleString() : "—")}
+          </div>
         </div>
       )}
     </div>

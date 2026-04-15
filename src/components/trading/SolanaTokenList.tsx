@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import Link from "next/link";
+import Image from "next/image";
 import { formatUsd, formatPercent, formatTime } from "@/utils/formats";
 
 interface TokenItem {
@@ -33,16 +33,15 @@ interface BirdeyeResponse {
 }
 
 interface SolanaTokenListProps {
-  apiUrl?: string;
   limit?: number;
 }
 
-const DEFAULT_API =
-  "https://public-api.birdeye.so/defi/tokenlist?sort_by=mc&sort_type=desc&offset=0&limit=50&min_liquidity=100&ui_amount_mode=scaled";
+// Proxy route — API key stays server-side
+const PROXY_URL = "/api/birdeye/tokenlist?chain=solana&sort_by=mc&sort_type=desc&offset=0&min_liquidity=100";
 
 type SortKey = "mc" | "v24hUSD" | "v24hChangePercent" | "liquidity";
 
-export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: SolanaTokenListProps) {
+export default function SolanaTokenList({ limit = 50 }: SolanaTokenListProps) {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,59 +67,43 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
   }, [filtered, sortKey]);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get<BirdeyeResponse>(apiUrl, {
-          headers: {
-            accept: "application/json",
-            "x-chain": "solana",
-            "x-api-key": process.env.NEXT_PUBLIC_BIRDEYE_API_KEY,
-          },
-          params: {
-            limit,
-          },
-        });
-        if (res.data && res.data.success === false) {
-          if (isMounted) setError(res.data.message || "Request failed");
+        const res = await fetch(`${PROXY_URL}&limit=${limit}`, { signal: controller.signal });
+        const data: BirdeyeResponse = await res.json();
+        if (data.success === false) {
+          setError(data.message || "Request failed");
           return;
         }
-        const items = (res.data?.data?.items ?? res.data?.data?.tokens ?? []) as TokenItem[];
-        if (isMounted) {
-          setTokens(
-            items.map((i) => ({
-              address: i.address,
-              symbol: i.symbol,
-              name: i.name,
-              decimals: i.decimals,
-              price: i.price,
-              liquidity: i.liquidity,
-              logoURI: i.logoURI ?? null,
-              v24hUSD: i.v24hUSD ?? null,
-              v24hChangePercent: i.v24hChangePercent ?? null,
-              mc: i.mc ?? null,
-              lastTradeUnixTime: i.lastTradeUnixTime ?? null,
-            }))
-          );
-        }
-      } catch (e: any) {
-        if (!isMounted) return;
-        if (axios.isAxiosError(e)) {
-          const msg = (e.response?.data as BirdeyeResponse | undefined)?.message;
-          setError(msg || "Failed to load tokens");
-        } else {
-          setError("Failed to load tokens");
-        }
+        const items = (data?.data?.items ?? data?.data?.tokens ?? []) as TokenItem[];
+        setTokens(
+          items.map((i) => ({
+            address: i.address,
+            symbol: i.symbol,
+            name: i.name,
+            decimals: i.decimals,
+            price: i.price,
+            liquidity: i.liquidity,
+            logoURI: i.logoURI ?? null,
+            v24hUSD: i.v24hUSD ?? null,
+            v24hChangePercent: i.v24hChangePercent ?? null,
+            mc: i.mc ?? null,
+            lastTradeUnixTime: i.lastTradeUnixTime ?? null,
+          }))
+        );
+      } catch (e: unknown) {
+        const err = e as { name?: string; message?: string };
+        if (err?.name === "AbortError") return;
+        setError(err?.message || "Failed to load tokens");
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     })();
-    return () => {
-      isMounted = false;
-    };
-  }, [apiUrl, limit]);
+    return () => controller.abort();
+  }, [limit]);
 
   return (
     <section>
@@ -165,7 +148,6 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                   <th className="px-3 py-2">Liquidity</th>
                   <th className="px-3 py-2">Market Cap</th>
                   <th className="px-3 py-2">Last Trade</th>
-                  {/* <th className="px-3 py-2">Address</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -175,9 +157,15 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                     <tr key={t.address} className="border-t border-gray-800 text-gray-300">
                       <td className="px-3 py-2">
                         <Link href={`/solana/${t.address}`} className="flex items-center gap-2 group hover:text-white">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           {t.logoURI ? (
-                            <img src={t.logoURI} alt={t.symbol} className="h-6 w-6 rounded-full" />
+                            <Image
+                              src={t.logoURI}
+                              alt={t.symbol}
+                              width={24}
+                              height={24}
+                              className="rounded-full"
+                              unoptimized
+                            />
                           ) : (
                             <div className="h-6 w-6 rounded-full bg-gray-800" />
                           )}
@@ -193,13 +181,12 @@ export default function SolanaTokenList({ apiUrl = DEFAULT_API, limit = 100 }: S
                       <td className="px-3 py-2">{typeof t.liquidity === "number" ? t.liquidity.toLocaleString() : "—"}</td>
                       <td className="px-3 py-2">{formatUsd(t.mc, 0)}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{formatTime(t.lastTradeUnixTime)}</td>
-                      {/* <td className="px-3 py-2 font-mono text-xs break-all">{t.address}</td> */}
                     </tr>
                   );
                 })}
                 {sorted.length === 0 && (
                   <tr>
-                    <td className="px-3 py-6 text-center text-gray-400" colSpan={8}>
+                    <td className="px-3 py-6 text-center text-gray-400" colSpan={7}>
                       No tokens found
                     </td>
                   </tr>
